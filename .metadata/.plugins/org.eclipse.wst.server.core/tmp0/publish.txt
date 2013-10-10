@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Thu Oct 10 15:10:39 CEST 2013
+org.eclipse.jst.j2ee.server\:/binary\:/home/darkmoonka/.m2/repository/org/springframework/spring-web/3.2.1.RELEASE/spring-web-3.2.1.RELEASE.jar=/home/darkmoonka/dev/springsource/vfabric-tc-server-developer-2.9.3.RELEASE/base-instance/wtpwebapps/monitor/WEB-INF/lib/spring-web-3.2.1.RELEASE.jar
+org.eclipse.jst.j2ee.server\:monitor=/home/darkmoonka/dev/springsource/vfabric-tc-server-developer-2.9.3.RELEASE/base-instance/wtpwebapps/monitor

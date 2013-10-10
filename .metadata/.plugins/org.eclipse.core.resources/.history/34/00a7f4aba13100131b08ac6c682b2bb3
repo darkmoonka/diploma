@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+
+	<!-- To enable @RequestMapping process on type level and method level -->
+	<!-- 
+	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	 -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
+	
+	<mvc:annotation-driven/>
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	<mvc:resources mapping="/tags/**" location="/tags/" />
+	
+	<context:annotation-config />
+	<context:component-scan base-package="thesis.vb.szt.server.monitor" />
+	
+	<tx:annotation-driven />
+	
+	<bean class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+	    <property name="mediaTypes">
+	        <map>
+	            <entry key="json" value="application/json" />
+<!-- 	            <entry key="xml" value="application/xml" /> -->
+	        </map>
+	    </property>
+	    <property name="viewResolvers">
+	    	<list>
+	    		<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+					<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+					<property name="prefix" value="/jsp/"/>
+					<property name="suffix" value=".jsp"/>
+				</bean>
+	    	</list>
+	    </property>
+	    <property name="defaultViews">
+	        <list>
+	            <bean
+	                class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+	                <property name="objectMapper">
+	                    <ref bean="jacksonMapper" />
+	                </property>
+	            </bean>
+<!-- 	            <bean id="poi" class="org.springframework.web.servlet.view.xml.MarshallingView"> -->
+<!-- 	                <property name="marshaller"> -->
+<!-- 	                    <ref bean="marshaller" /> -->
+<!-- 	                </property> -->
+<!-- 	            </bean> -->
+	        </list>
+	    </property>
+	    <property name="favorPathExtension" value="false" />
+	    <property name="favorParameter" value="true" />
+	    <property name="useNotAcceptableStatusCode" value="true" />
+	</bean>
+	
+	<bean id="multipartResolver"
+        class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="100000000" />
+    </bean>
+</beans>

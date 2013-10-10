@@ -1,0 +1,33 @@
+package thesis.vb.szt.server.controller;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import thesis.vb.szt.agent.server.dao.Dao;
+
+@Controller
+public class DataController 
+{
+	
+	@Autowired
+	private Dao dao;
+	
+	
+	@RequestMapping(value = "/home", method = RequestMethod.GET)
+	public String getHomePage() 
+	{
+		return "index";
+	}
+	
+	
+	@RequestMapping(value = "/postData/{data}", method = RequestMethod.GET)
+	public String postData(@PathVariable String data) {
+		Logger logger = Logger.getLogger("Data Controller");
+		logger.info("	Received request to post data: " + data);
+		return data;
+	}
+}
