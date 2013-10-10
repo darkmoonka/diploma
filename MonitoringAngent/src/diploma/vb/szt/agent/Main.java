@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.hyperic.sigar.Sigar;
 
 public class Main
@@ -39,20 +40,19 @@ public class Main
 		result = result + "</" + ITEM + ">";
 
 		System.out.println(result);
-		// System.setProperty("java.library.path", System.getProperties()
-		// .getProperty("java.library.path") + "/lib");
-		// System.out.println(System.getProperties().getProperty(
-		// "java.library.path"));
-		// Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths"
-		// );
-		// fieldSysPath.setAccessible( true );
-		// fieldSysPath.set( null, null );
 		
-		sendPost(result);
+		XMLConfiguration configer = new XMLConfiguration("config.xml");
+		
+		String protocol = (String) configer.getProperty("Server.Protocol");
+		String address = (String) configer.getProperty("Server.Address");
+		String port = (String) configer.getProperty("Server.Port");
+		String url = protocol + "://" + address + ":" + port;
+		
+		sendPost(url, result);
 	}
-	private static void sendPost(String data) throws Exception {
+	private static void sendPost(String url, String data) throws Exception {
 		 
-		String url = "http://localhost:8080/monitor/postData";
+		url = url + "/monitor/postData";
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
  
