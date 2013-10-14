@@ -5,7 +5,10 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.KeyPair;
 import java.util.ArrayList;
+
+import javax.crypto.SecretKey;
 
 import org.apache.commons.configuration.XMLConfiguration;
 import org.hyperic.sigar.Sigar;
@@ -45,7 +48,13 @@ public class Main
 		int keyLength = Integer.valueOf((String) configer
 				.getProperty("Key.Length"));
 
-		Keys.generateKeyPair(keyPath, keyLength);
+		SecretKey aesKey = Keys.generateSymmetricKey();
+		KeyPair keyPair = Keys.getKeyPair(keyPath, keyLength);
+		result = Keys.encryptString(result, keyPair.getPublic(), aesKey);
+		byte[] encryptedAES = Keys.getEncryptedAES(keyPair.getPublic(), aesKey);
+
+		System.out.println(Keys.decryptString(result, keyPair.getPrivate(),
+				encryptedAES));
 
 		String protocol = (String) configer.getProperty("Server.Protocol");
 		String address = (String) configer.getProperty("Server.Address");

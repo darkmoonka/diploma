@@ -19,22 +19,64 @@ import java.security.spec.X509EncodedKeySpec;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class Keys
 {
-
-	public static void generateKeyPair(String keyPath, int keyLength)
+	public static KeyPair getKeyPair(String keyPath, int keyLength)
 			throws NoSuchAlgorithmException, InvalidKeySpecException,
 			IOException, InvalidKeyException, IllegalBlockSizeException,
 			BadPaddingException, NoSuchProviderException,
 			NoSuchPaddingException
 	{
+		KeyPair keyPair = null;
+
+		File publicKeyPath = new File(keyPath + "/public.key");
+		File privateKeyPath = new File(keyPath + "/private.key");
+
+		// SecretKey symmetricKey = generateSymmetricKey();
+		//
+		// Cipher cipher = Cipher.getInstance("AES");
+		// cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
+		// byte[] cipherText = cipher.doFinal("alma".getBytes());
+		// String enc = new String(cipherText);
+		// System.out.println(enc);
+		//
+		// cipher = Cipher.getInstance("AES");
+		// cipher.init(Cipher.DECRYPT_MODE, symmetricKey);
+		// byte[] plainText = cipher.doFinal(enc.getBytes());
+		// System.out.println(new String(plainText));
+
+		if (!publicKeyPath.exists() || !privateKeyPath.exists())
+		{
+			File file = new File(keyPath);
+			if (!file.exists())
+				file.mkdir();
+
+			publicKeyPath.deleteOnExit();
+			privateKeyPath.deleteOnExit();
+
+			keyPair = generateKeyPair(keyLength);
+			saveKeyPair(keyPath, keyPair);
+
+			// TODO send keys to server
+		} else
+			keyPair = loadKeyPair(keyPath);
+
+		return keyPair;
+	}
+
+	private static KeyPair generateKeyPair(int keyLength)
+			throws NoSuchAlgorithmException
+	{
+		KeyPair keyPair;
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(keyLength);
-		KeyPair keyPair = keyPairGenerator.genKeyPair();
-
-		saveKeyPair(keyPath, keyPair);
+		keyPair = keyPairGenerator.genKeyPair();
+		return keyPair;
 	}
 
 	private static void saveKeyPair(String path, KeyPair keyPair)
@@ -114,29 +156,57 @@ public class Keys
 		return keyFactory.generatePrivate(privateKeySpec);
 	}
 
-	public static String encodeString(String plainText, PublicKey key)
-			throws IllegalBlockSizeException, BadPaddingException,
-			InvalidKeyException, NoSuchAlgorithmException,
+	public static String encryptString(String plainText, PublicKey key,
+			SecretKey symmetricKey) throws IllegalBlockSizeException,
+			BadPaddingException, InvalidKeyException, NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException
 	{
-		Cipher cipher = Cipher.getInstance("RSA");
+		Cipher cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
+		byte[] encryptedData = cipher.doFinal(plainText.getBytes());
 
-		cipher.init(Cipher.ENCRYPT_MODE, key);
-
-		byte[] cipherText = cipher.doFinal(plainText.getBytes());
-		return new String(cipherText);
+		return new String(encryptedData);
 	}
 
-	public static String decodeString(String encodedText, PrivateKey key)
-			throws IllegalBlockSizeException, BadPaddingException,
-			InvalidKeyException, NoSuchAlgorithmException,
+	public static byte[] getEncryptedAES(PublicKey key, SecretKey AES)
+			throws NoSuchAlgorithmException, NoSuchPaddingException,
+			IllegalBlockSizeException, BadPaddingException, InvalidKeyException
+	{
+		Cipher cipher = Cipher.getInstance("RSA");
+		cipher.init(Cipher.ENCRYPT_MODE, key);
+		byte[] encryptedAES = cipher.doFinal(AES.getEncoded());
+
+		return encryptedAES;
+	}
+
+	public static String decryptString(String encryptedText, PrivateKey key,
+			byte[] encryptedAES) throws IllegalBlockSizeException,
+			BadPaddingException, InvalidKeyException, NoSuchAlgorithmException,
 			NoSuchProviderException, NoSuchPaddingException
 	{
 		Cipher cipher = Cipher.getInstance("RSA");
-
 		cipher.init(Cipher.DECRYPT_MODE, key);
+		byte[] plainAES = cipher.doFinal(encryptedAES);
 
-		byte[] plainText = cipher.doFinal(encodedText.getBytes());
-		return new String(plainText);
+		SecretKey keyFromBytes = new SecretKeySpec(plainAES, "AES");
+		cipher = Cipher.getInstance("AES");
+		cipher.init(Cipher.DECRYPT_MODE, keyFromBytes);
+
+		byte[] plainData = cipher.doFinal(encryptedText.getBytes());
+
+		return new String(plainData);
+	}
+
+	public static SecretKey generateSymmetricKey()
+			throws NoSuchAlgorithmException
+	{
+		String algorithm = "AES";
+		KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
+		keyGen.init(256);
+		SecretKey key = keyGen.generateKey();
+		byte[] keyBytes = key.getEncoded();
+
+		SecretKey keyFromBytes = new SecretKeySpec(keyBytes, algorithm);
+		return keyFromBytes;
 	}
 }
