@@ -16,8 +16,6 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
-		System.out.println("java.library.path: "
-				+ System.getProperty("java.library.path"));
 		Sigar sigar = new Sigar();
 		Os os = new Os(sigar);
 		Cpu cpu = new Cpu(sigar);
@@ -40,50 +38,58 @@ public class Main
 		result = result + "</" + ITEM + ">";
 
 		System.out.println(result);
-		
+
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		
+
+		String keyPath = (String) configer.getProperty("Key.Path");
+		int keyLength = Integer.valueOf((String) configer
+				.getProperty("Key.Length"));
+
+		Keys.generateKeyPair(keyPath, keyLength);
+
 		String protocol = (String) configer.getProperty("Server.Protocol");
 		String address = (String) configer.getProperty("Server.Address");
 		String port = (String) configer.getProperty("Server.Port");
 		String url = protocol + "://" + address + ":" + port;
-		
+
 		sendPost(url, result);
 	}
-	private static void sendPost(String url, String data) throws Exception {
-		 
+
+	private static void sendPost(String url, String data) throws Exception
+	{
+
 		url = url + "/monitor/postData";
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
- 
-		//add reuqest header
+
+		// add reuqest header
 		con.setRequestMethod("POST");
 		con.setRequestProperty("User-Agent", "");
 		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
- 
- 
+
 		// Send post request
 		con.setDoOutput(true);
 		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 		wr.writeBytes(data);
 		wr.flush();
 		wr.close();
- 
+
 		int responseCode = con.getResponseCode();
 		System.out.println("\nSending 'POST' request to URL : " + url);
 		System.out.println("Post parameters : " + data);
 		System.out.println("Response Code : " + responseCode);
- 
-		BufferedReader in = new BufferedReader(
-		        new InputStreamReader(con.getInputStream()));
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				con.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
- 
-		while ((inputLine = in.readLine()) != null) {
+
+		while ((inputLine = in.readLine()) != null)
+		{
 			response.append(inputLine);
 		}
 		in.close();
- 
+
 		System.out.println(response.toString());
 	}
 }

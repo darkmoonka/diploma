@@ -5,4 +5,8 @@
 		<Port>8080</Port>
 		<Protocol>http</Protocol>
 	</Server>
+	<Key>
+		<Length>2048</Length>
+		<Path>Keys</Path>
+	</Key>
 </Settings>
