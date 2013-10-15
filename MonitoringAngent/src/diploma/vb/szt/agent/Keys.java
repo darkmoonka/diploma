@@ -14,6 +14,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
@@ -24,6 +25,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class Keys
 {
@@ -157,19 +160,7 @@ public class Keys
 		return keyFactory.generatePrivate(privateKeySpec);
 	}
 
-	public static String encryptString(String plainText, PublicKey key,
-			SecretKey symmetricKey) throws IllegalBlockSizeException,
-			BadPaddingException, InvalidKeyException, NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException
-	{
-		Cipher cipher = Cipher.getInstance("AES");
-		cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
-		byte[] encryptedData = cipher.doFinal(plainText.getBytes());
-
-		return new String(encryptedData);
-	}
-
-	public static byte[] getEncryptedAES(PublicKey key, SecretKey AES)
+	public static byte[] encryptAES(PublicKey key, SecretKey AES)
 			throws NoSuchAlgorithmException, NoSuchPaddingException,
 			IllegalBlockSizeException, BadPaddingException, InvalidKeyException
 	{
@@ -178,6 +169,21 @@ public class Keys
 		byte[] encryptedAES = cipher.doFinal(AES.getEncoded());
 
 		return encryptedAES;
+	}
+
+	public static String encryptString(String plainText, SecretKey key)
+			throws IllegalBlockSizeException, BadPaddingException,
+			InvalidKeyException, NoSuchAlgorithmException,
+			NoSuchProviderException, NoSuchPaddingException,
+			InvalidParameterSpecException, InvalidAlgorithmParameterException
+	{
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+		SecretKeySpec secretKey = new SecretKeySpec(key.getEncoded(), "AES");
+		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+		String encryptedString = Base64.encodeBase64String(cipher
+				.doFinal(plainText.getBytes()));
+
+		return encryptedString;
 	}
 
 	public static String decryptString(String encryptedText, PrivateKey key,
@@ -190,41 +196,19 @@ public class Keys
 		cipher.init(Cipher.DECRYPT_MODE, key);
 		byte[] plainAES = cipher.doFinal(encryptedAES);
 
-		SecretKey keyFromBytes = new SecretKeySpec(plainAES, "AES");
-		cipher = Cipher.getInstance("AES");
-		cipher.init(Cipher.DECRYPT_MODE, keyFromBytes);
+		cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+		SecretKeySpec secretKey = new SecretKeySpec(plainAES, "AES");
+		cipher.init(Cipher.DECRYPT_MODE, secretKey);
+		String decryptedString = new String(cipher.doFinal(Base64
+				.decodeBase64(encryptedText)));
 
-		System.out.println(encryptedText + " " + encryptedText.getBytes().length);
-
-		byte[] plainData = cipher.doFinal(padder(encryptedText.getBytes()));
-
-		return new String(plainData);
+		return decryptedString;
 	}
 
 	public static SecretKey generateSymmetricKey()
 			throws NoSuchAlgorithmException
 	{
-		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-		SecretKey key = keyGen.generateKey();
-		byte[] keyBytes = key.getEncoded();
-
-		SecretKey keyFromBytes = new SecretKeySpec(keyBytes, "AES");
-		return keyFromBytes;
-	}
-
-	private static byte[] padder(byte[] original)
-	{
-		int originalLength = original.length;
-		int mod = originalLength % 16;
-		int sub = 16 - mod;
-		byte[] result = new byte[original.length + sub];
-		
-		for (int i = 0; i < sub; i++)
-			result[i] = 0;
-		
-		for(int i = 0; i < original.length; i++)
-			result[i + sub] = original[i];
-
-		return result;
+		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+		return keyGenerator.generateKey();
 	}
 }

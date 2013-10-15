@@ -20,9 +20,9 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
-		
+
 		System.out.println(UUID.randomUUID().toString());
-		
+
 		Sigar sigar = new Sigar();
 		Os os = new Os(sigar);
 		Cpu cpu = new Cpu(sigar);
@@ -54,11 +54,14 @@ public class Main
 
 		SecretKey aesKey = Keys.generateSymmetricKey();
 		KeyPair keyPair = Keys.getKeyPair(keyPath, keyLength);
-		result = Keys.encryptString(result, keyPair.getPublic(), aesKey);
-		byte[] encryptedAES = Keys.getEncryptedAES(keyPair.getPublic(), aesKey);
+		result = Keys.encryptString(result, aesKey);
+		byte[] encryptedAES = Keys.encryptAES(keyPair.getPublic(), aesKey);
 
-		System.out.println(Keys.decryptString(result, keyPair.getPrivate(),
-				encryptedAES));
+		// TODO minta
+		System.out
+				.println("2: "
+						+ Keys.decryptString(result, keyPair.getPrivate(),
+								encryptedAES));
 
 		String protocol = (String) configer.getProperty("Server.Protocol");
 		String address = (String) configer.getProperty("Server.Address");
