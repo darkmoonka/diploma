@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -182,7 +183,8 @@ public class Keys
 	public static String decryptString(String encryptedText, PrivateKey key,
 			byte[] encryptedAES) throws IllegalBlockSizeException,
 			BadPaddingException, InvalidKeyException, NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException
+			NoSuchProviderException, NoSuchPaddingException,
+			InvalidAlgorithmParameterException
 	{
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.DECRYPT_MODE, key);
@@ -192,7 +194,9 @@ public class Keys
 		cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.DECRYPT_MODE, keyFromBytes);
 
-		byte[] plainData = cipher.doFinal(encryptedText.getBytes());
+		System.out.println(encryptedText + " " + encryptedText.getBytes().length);
+
+		byte[] plainData = cipher.doFinal(padder(encryptedText.getBytes()));
 
 		return new String(plainData);
 	}
@@ -200,13 +204,27 @@ public class Keys
 	public static SecretKey generateSymmetricKey()
 			throws NoSuchAlgorithmException
 	{
-		String algorithm = "AES";
-		KeyGenerator keyGen = KeyGenerator.getInstance(algorithm);
-		keyGen.init(256);
+		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 		SecretKey key = keyGen.generateKey();
 		byte[] keyBytes = key.getEncoded();
 
-		SecretKey keyFromBytes = new SecretKeySpec(keyBytes, algorithm);
+		SecretKey keyFromBytes = new SecretKeySpec(keyBytes, "AES");
 		return keyFromBytes;
+	}
+
+	private static byte[] padder(byte[] original)
+	{
+		int originalLength = original.length;
+		int mod = originalLength % 16;
+		int sub = 16 - mod;
+		byte[] result = new byte[original.length + sub];
+		
+		for (int i = 0; i < sub; i++)
+			result[i] = 0;
+		
+		for(int i = 0; i < original.length; i++)
+			result[i + sub] = original[i];
+
+		return result;
 	}
 }

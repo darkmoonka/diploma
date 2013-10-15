@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -19,6 +20,9 @@ public class Main
 
 	public static void main(String[] args) throws Exception
 	{
+		
+		System.out.println(UUID.randomUUID().toString());
+		
 		Sigar sigar = new Sigar();
 		Os os = new Os(sigar);
 		Cpu cpu = new Cpu(sigar);
