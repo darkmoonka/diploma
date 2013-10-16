@@ -1,7 +1,5 @@
 package thesis.vb.szt.server.entity;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,24 +10,11 @@ import javax.persistence.Table;
 public class Agent
 {
 	@Id
-	@Column(name = "guid")
-	UUID guid;
-
-	@Column(name = "publicKey")
-	byte[] publicKey;
-
 	@Column(name = "address")
 	String address;
 
-	public UUID getGuid()
-	{
-		return guid;
-	}
-
-	public void setGuid(UUID guid)
-	{
-		this.guid = guid;
-	}
+	@Column(name = "publicKey")
+	byte[] publicKey;
 
 	public byte[] getPublicKey()
 	{
