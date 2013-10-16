@@ -64,6 +64,6 @@ public class Main
 		Communication.register(url + "/monitor/registerAgent", macAddress,
 				keyPair.getPublic().getEncoded());
 
-//		 Communication.sendData(url + "/monitor/postData", result);
+		 Communication.sendData(url + "/monitor/postData", result);
 	}
 }
