@@ -41,19 +41,6 @@ public class Keys
 		File publicKeyPath = new File(keyPath + "/public.key");
 		File privateKeyPath = new File(keyPath + "/private.key");
 
-		// SecretKey symmetricKey = generateSymmetricKey();
-		//
-		// Cipher cipher = Cipher.getInstance("AES");
-		// cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
-		// byte[] cipherText = cipher.doFinal("alma".getBytes());
-		// String enc = new String(cipherText);
-		// System.out.println(enc);
-		//
-		// cipher = Cipher.getInstance("AES");
-		// cipher.init(Cipher.DECRYPT_MODE, symmetricKey);
-		// byte[] plainText = cipher.doFinal(enc.getBytes());
-		// System.out.println(new String(plainText));
-
 		if (!publicKeyPath.exists() || !privateKeyPath.exists())
 		{
 			File file = new File(keyPath);
@@ -65,8 +52,6 @@ public class Keys
 
 			keyPair = generateKeyPair(keyLength);
 			saveKeyPair(keyPath, keyPair);
-
-			// TODO send keys to server
 		} else
 			keyPair = loadKeyPair(keyPath);
 
