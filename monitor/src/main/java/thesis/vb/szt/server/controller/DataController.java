@@ -2,7 +2,24 @@ package thesis.vb.szt.server.controller;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.InvalidParameterSpecException;
+import java.security.spec.X509EncodedKeySpec;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import thesis.vb.szt.server.dao.Dao;
 import thesis.vb.szt.server.entity.Agent;
+import thesis.vb.szt.server.security.Keys;
+import thesis.vb.szt.server.util.Result;
 
 @Controller
 public class DataController
@@ -42,18 +61,54 @@ public class DataController
 
 	@RequestMapping(value = "/registerAgent", method = RequestMethod.POST)
 	public @ResponseBody
-	byte[] registerAgent(@RequestParam("macAddress") String macAddress,
-			@RequestParam("publicKey") MultipartFile publicKey) throws IOException
+	Result registerAgent(@RequestParam("macAddress") String macAddress,
+			@RequestParam("publicKey") MultipartFile publicKey)
 	{
-		Agent agent = dao.getAgentByAddress(macAddress);
-		byte[] key = publicKey.getBytes();
-		
-		if (agent != null) // már létezik a DBben
-			return null;
+		try
+		{
+			// Agent agent = dao.getAgentByAddress(macAddress);
+			byte[] agentPublicKey = publicKey.getBytes();
 
-		// TODO add agent to db and
-		// return server's pub key
+			XMLConfiguration configer = new XMLConfiguration("config.xml");
 
-		return new byte[] { 3 };
+			String keyPath = (String) configer.getProperty("Key.Path");
+			int keyLength = Integer.valueOf((String) configer.getProperty("Key.Length"));
+
+			KeyPair keyPair = Keys.getKeyPair(keyPath, keyLength);
+			SecretKey aesKey = Keys.generateSymmetricKey();
+
+			String value = Keys.encryptString("33", aesKey);
+			byte[] encryptedAES = Keys.encryptAES(keyPair.getPublic(), aesKey);
+
+			// if (agent != null) // már létezik a DBben
+			// return new Result(value, encryptedAES, keyPair.getPublic());
+			//
+			// agent = new Agent();
+			// agent.setAddress(macAddress);
+			// agent.setPublicKey(agentPublicKey);
+
+			// dao.saveAgent(agent);
+
+			// return new Result(value, encryptedAES, keyPair.getPublic());
+
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	@RequestMapping(value = "/register", method = RequestMethod.GET)
+	public @ResponseBody String register() throws Exception
+	{
+		KeyPair keyPair = Keys.getKeyPair("Keys", 2048);
+		SecretKey aesKey = Keys.generateSymmetricKey();
+
+		String value = Keys.encryptString("33", aesKey);
+		byte[] encryptedAES = Keys.encryptAES(keyPair.getPublic(), aesKey);
+
+		// return new Result("10", encryptedAES, keyPair.getPublic());
+		return new Result("10").toString();
 	}
 }

@@ -35,7 +35,7 @@ public class Dao
 			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, macAddress);
 		} catch (Exception e)
 		{
-			logger.error("Error while getting agent with address: " + macAddress, e);
+			logger.error("Agent not found in DB with address: " + macAddress, e);
 			return null;
 		}
 	}
