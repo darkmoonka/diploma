@@ -1,5 +1,7 @@
 package thesis.vb.szt.server.dao;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import thesis.vb.szt.server.entity.Agent;
+import thesis.vb.szt.server.entity.Report;
 
 @Transactional
 @Repository
@@ -32,7 +35,11 @@ public class Dao
 	{
 		try
 		{
-			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, macAddress);
+			String hql = "select agent from Agent agent where agent.address = :address";
+			Agent agent = (Agent) sessionFactory.getCurrentSession().createQuery(hql)
+					.setString("address", macAddress).uniqueResult();
+
+			return agent;
 		} catch (Exception e)
 		{
 			logger.error("Agent not found in DB with address: " + macAddress, e);
@@ -40,31 +47,52 @@ public class Dao
 		}
 	}
 
-	public boolean saveAgent(Agent agent)
+	public Integer saveAgent(Agent agent)
 	{
-		logger.info("Received request to add agent to database with address: " + agent.getAddress());
+		logger.info("Received request to add agent to database with address: "
+				+ agent.getAddress());
 
 		try
 		{
-			sessionFactory.getCurrentSession().save(agent);
-			return true;
+			return (Integer) sessionFactory.getCurrentSession().save(agent);
 		} catch (HibernateException e)
 		{
-			logger.error("Unable to add agent to database with address: " + agent.getAddress(), e);
-			return false;
+			logger.error(
+					"Unable to add agent to database with address: " + agent.getAddress(), e);
+			return null;
 		}
 	}
 
-	// public Vehicle getVehicle(String licensePlate) {
-	// try {
-	// return (Vehicle) sessionFactory.getCurrentSession().get(Vehicle.class,
-	// licensePlate);
-	// } catch (Exception e) {
-	// logger.error("Unable to get vehicle with license plate: " + licensePlate,
-	// e);
-	// return null;
-	// }
-	// }
+	public void saveReport(Report report)
+	{
+		logger.info("Received request to add report to database");
+
+		try
+		{
+			sessionFactory.getCurrentSession().save(report);
+		} catch (HibernateException e)
+		{
+			logger.error("Unable to add report to database");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Report> getAllReports()
+	{
+		return sessionFactory.getCurrentSession().createQuery("from Report").list();
+	}
+
+	public Agent getAgentById(int agentId)
+	{
+		try
+		{
+			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, agentId);
+		} catch (Exception e)
+		{
+			logger.error("Unable to get agent with agentId: " + agentId, e);
+			return null;
+		}
+	}
 	//
 	//
 	// public List<Vehicle> getVehicles(Criteria criteria)

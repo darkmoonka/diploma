@@ -13,12 +13,12 @@ public class Agent
 	@Id
 	@Column(name = "id")
 	@GeneratedValue
-	private Integer id;
-	
-	@Column(name = "address")
+	private int id;
+
+	@Column(name = "address", unique = true)
 	private String address;
 
-	@Column(name = "publicKey")
+	@Column(name = "publicKey", length = 2048)
 	private byte[] publicKey;
 
 	public byte[] getPublicKey()
@@ -41,12 +41,12 @@ public class Agent
 		this.address = address;
 	}
 
-	public Integer getId()
+	public int getId()
 	{
 		return id;
 	}
 
-	public void setId(Integer id)
+	public void setId(int id)
 	{
 		this.id = id;
 	}

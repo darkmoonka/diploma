@@ -30,26 +30,22 @@
 		<property name="dao" ref="dao"></property>
 	</bean>
 
+
+	<!-- ****************************JAXB************************************* -->
+
+
+	<bean id="marshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller"
+		autowire-candidate="true" autowire="byName">
+		<property name="classesToBeBound">
+			<list>
+				<value>thesis.vb.szt.server.util.CommunicationData</value>
+			</list>
+		</property>
+	</bean>
+
 	<!-- **************************JACKSON************************************* -->
 
-	<!-- <bean id="jacksonMapper" class="org.codehaus.jackson.map.ObjectMapper"> -->
-	<!-- <property name="deserializationConfig"> -->
-	<!-- </property> -->
-	<!-- </bean> -->
-
-	<!-- <mvc:annotation-driven> -->
-	<!-- <mvc:message-converters> -->
-	<!-- <bean -->
-	<!-- class="org.springframework.http.converter.ResourceHttpMessageConverter" 
-		/> -->
-	<!-- <bean -->
-	<!-- class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" 
-		/> -->
-	<!-- <bean -->
-	<!-- class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter" 
-		/> -->
-	<!-- </mvc:message-converters> -->
-	<!-- </mvc:annotation-driven> -->
+	<bean id="JacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
 
 
 	<!-- <bean -->

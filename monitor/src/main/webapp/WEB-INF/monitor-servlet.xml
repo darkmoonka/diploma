@@ -45,25 +45,21 @@
 				</bean>
 			</list>
 		</property>
-<!-- 		<property name="defaultViews"> -->
-<!-- 			<list> -->
-<!-- 				<bean -->
-<!-- 					class="org.springframework.web.servlet.view.json.MappingJacksonJsonView" /> -->
-<!-- 			</list> -->
-			<!-- <list> -->
-			<!-- <bean -->
-			<!-- class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"> -->
-			<!-- <property name="objectMapper"> -->
-			<!-- <ref bean="jacksonMapper" /> -->
-			<!-- </property> -->
-			<!-- </bean> -->
-			<!-- <bean id="poi" class="org.springframework.web.servlet.view.xml.MarshallingView"> -->
-			<!-- <property name="marshaller"> -->
-			<!-- <ref bean="marshaller" /> -->
-			<!-- </property> -->
-			<!-- </bean> -->
-			<!-- </list> -->
-<!-- 		</property> -->
+		 <property name="defaultViews">
+	        <list>
+	            <bean
+	                class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+	                <property name="objectMapper">
+	                    <ref bean="JacksonObjectMapper" />
+	                </property>
+	            </bean>
+	            <bean id="poi" class="org.springframework.web.servlet.view.xml.MarshallingView">
+	                <property name="marshaller">
+	                    <ref bean="marshaller" />
+	                </property>
+	            </bean>
+	        </list>
+	    </property>
 		<property name="favorPathExtension" value="false" />
 		<property name="favorParameter" value="true" />
 		<property name="useNotAcceptableStatusCode" value="true" />

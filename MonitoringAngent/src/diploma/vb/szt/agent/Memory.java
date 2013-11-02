@@ -7,7 +7,7 @@ import org.hyperic.sigar.SigarException;
 public class Memory extends MonitoredItem
 {
 	private int sizeMb;
-	private float freePercent;
+	private int freePercent;
 
 	private final String SIZEMB = "sizeMb";
 	private final String FREEPERCENT = "freePercent";
@@ -17,7 +17,7 @@ public class Memory extends MonitoredItem
 		super("MEMORY");
 		Mem mem = sigar.getMem();
 		sizeMb = (int) (mem.getTotal() / 1024 / 1024);
-		freePercent = (float) mem.getFreePercent();
+		freePercent = (int) mem.getFreePercent();
 	}
 
 	@Override

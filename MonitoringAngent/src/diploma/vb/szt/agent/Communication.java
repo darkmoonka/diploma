@@ -1,7 +1,6 @@
 package diploma.vb.szt.agent;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -9,7 +8,14 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -21,40 +27,20 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 public class Communication
 {
-	static void sendData(String url, String data) throws Exception
+	static void sendData(String url, String encryptedData,
+			String encryptedAgentId, byte[] encryptedAES) throws Exception
 	{
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpPost postRequest = new HttpPost(url);
+		MultipartEntity reqEntity = new MultipartEntity(
+				HttpMultipartMode.BROWSER_COMPATIBLE);
 
-		// add reuqest header
-		con.setRequestMethod("POST");
-		con.setRequestProperty("User-Agent", "");
-		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+		reqEntity.addPart("encryptedAgentId", new StringBody(encryptedAgentId));
+		reqEntity.addPart("encryptedData", new StringBody(encryptedData));
+		reqEntity.addPart("encryptedAES", new ByteArrayBody(encryptedAES, ""));
 
-		// Send post request
-		con.setDoOutput(true);
-		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-		wr.writeBytes(data);
-		wr.flush();
-		wr.close();
-
-		int responseCode = con.getResponseCode();
-		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + data);
-		System.out.println("Response Code : " + responseCode);
-
-		BufferedReader in = new BufferedReader(new InputStreamReader(
-				con.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();
-
-		while ((inputLine = in.readLine()) != null)
-		{
-			response.append(inputLine);
-		}
-		in.close();
-
-		System.out.println(response.toString());
+		postRequest.setEntity(reqEntity);
+		httpClient.execute(postRequest);
 	}
 
 	static String getMacAddress() throws UnknownHostException, SocketException
@@ -72,7 +58,7 @@ public class Communication
 		return sb.toString();
 	}
 
-	static void register(String url, String macAddress, byte[] publicKey)
+	static int register(String url, String macAddress, byte[] publicKey)
 			throws Exception
 	{
 		HttpClient httpClient = new DefaultHttpClient();
@@ -84,14 +70,45 @@ public class Communication
 		postRequest.setEntity(reqEntity);
 		HttpResponse response = httpClient.execute(postRequest);
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				response.getEntity().getContent(), "UTF-8"));
-		String sResponse;
-		StringBuilder s = new StringBuilder();
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance(CommunicationData.class);
+		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		CommunicationData communicationData = (CommunicationData) jaxbUnmarshaller
+				.unmarshal(new InputStreamReader(response.getEntity()
+						.getContent(), "UTF-8"));
 
-		while ((sResponse = reader.readLine()) != null)
+		String agentId = Keys.decryptString(communicationData.getValue(),
+				Keys.loadPrivateKey(), communicationData.getEncryptedAesKey());
+
+		return Integer.valueOf(agentId);
+	}
+
+	static PublicKey getServerPublicKey(String url) throws Exception
+	{
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		int responseCode = con.getResponseCode();
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+				con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null)
 		{
-			s = s.append(sResponse);
+			response.append(inputLine);
 		}
+		in.close();
+
+		String result = response.toString();
+		byte[] key = Base64.decodeBase64(result);
+
+		KeyFactory rsaKeyFac = KeyFactory.getInstance("RSA");
+		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(key);
+		PublicKey serverPublicKey = rsaKeyFac.generatePublic(keySpec);
+
+		return serverPublicKey;
 	}
 }

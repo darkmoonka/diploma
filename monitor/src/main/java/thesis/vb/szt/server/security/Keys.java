@@ -4,56 +4,38 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.configuration.XMLConfiguration;
 
 
 public class Keys
 {
-	public static KeyPair getKeyPair(String keyPath, int keyLength)
-			throws NoSuchAlgorithmException, InvalidKeySpecException,
-			IOException, InvalidKeyException, IllegalBlockSizeException,
-			BadPaddingException, NoSuchProviderException,
-			NoSuchPaddingException
+	public static KeyPair getKeyPair() throws Exception
 	{
 		KeyPair keyPair = null;
 
-		File publicKeyPath = new File(keyPath + "/public.key");
-		File privateKeyPath = new File(keyPath + "/private.key");
+		XMLConfiguration configer = new XMLConfiguration("config.xml");
 
-		// SecretKey symmetricKey = generateSymmetricKey();
-		//
-		// Cipher cipher = Cipher.getInstance("AES");
-		// cipher.init(Cipher.ENCRYPT_MODE, symmetricKey);
-		// byte[] cipherText = cipher.doFinal("alma".getBytes());
-		// String enc = new String(cipherText);
-		// System.out.println(enc);
-		//
-		// cipher = Cipher.getInstance("AES");
-		// cipher.init(Cipher.DECRYPT_MODE, symmetricKey);
-		// byte[] plainText = cipher.doFinal(enc.getBytes());
-		// System.out.println(new String(plainText));
+		String keyPath = (String) configer.getProperty("Key.Path");
+		int keyLength = Integer.valueOf((String) configer
+				.getProperty("Key.Length"));
+
+		File publicKeyPath = new File(keyPath + File.separator + "public.key");
+		File privateKeyPath = new File(keyPath + File.separator + "private.key");
 
 		if (!publicKeyPath.exists() || !privateKeyPath.exists())
 		{
@@ -66,10 +48,8 @@ public class Keys
 
 			keyPair = generateKeyPair(keyLength);
 			saveKeyPair(keyPath, keyPair);
-
-			// TODO send keys to server
 		} else
-			keyPair = loadKeyPair(keyPath);
+			keyPair = loadKeyPair();
 
 		return keyPair;
 	}
@@ -99,41 +79,43 @@ public class Keys
 
 		FileOutputStream fos;
 
-		file = new File(path + "/public.key");
+		file = new File(path + File.separator + "public.key");
 		if (!file.exists())
 		{
-			fos = new FileOutputStream(path + "/public.key");
+			file.createNewFile();
+			fos = new FileOutputStream(file);
 			fos.write(x509EncodedKeySpec.getEncoded());
 			fos.close();
 		}
 
 		// Store Private Key.
-		file = new File(path + "/private.key");
+		file = new File(path + File.separator + "private.key");
 		if (!file.exists())
 		{
 			PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(
 					privateKey.getEncoded());
-			fos = new FileOutputStream(path + "/private.key");
+			fos = new FileOutputStream(file);
 			fos.write(pkcs8EncodedKeySpec.getEncoded());
 			fos.close();
 		}
 	}
 
-	public static KeyPair loadKeyPair(String path) throws IOException,
-			NoSuchAlgorithmException, InvalidKeySpecException
+	public static KeyPair loadKeyPair() throws Exception
 	{
-		PublicKey publicKey = loadPublicKey(path);
-		PrivateKey privateKey = loadPrivateKey(path);
+		PublicKey publicKey = loadPublicKey();
+		PrivateKey privateKey = loadPrivateKey();
 
 		return new KeyPair(publicKey, privateKey);
 	}
 
-	public static PublicKey loadPublicKey(String path) throws IOException,
-			NoSuchAlgorithmException, InvalidKeySpecException
+	public static PublicKey loadPublicKey() throws Exception
 	{
+		XMLConfiguration configer = new XMLConfiguration("config.xml");
+		String keyPath = (String) configer.getProperty("Key.Path");
+
 		// Read Public Key.
-		File filePublicKey = new File(path + "/public.key");
-		FileInputStream fis = new FileInputStream(path + "/public.key");
+		File filePublicKey = new File(keyPath + File.separator + "public.key");
+		FileInputStream fis = new FileInputStream(filePublicKey);
 		byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
 		fis.read(encodedPublicKey);
 		fis.close();
@@ -144,12 +126,14 @@ public class Keys
 		return keyFactory.generatePublic(publicKeySpec);
 	}
 
-	public static PrivateKey loadPrivateKey(String path) throws IOException,
-			NoSuchAlgorithmException, InvalidKeySpecException
+	public static PrivateKey loadPrivateKey() throws Exception
 	{
+		XMLConfiguration configer = new XMLConfiguration("config.xml");
+		String keyPath = (String) configer.getProperty("Key.Path");
+
 		// Read Private Key.
-		File filePrivateKey = new File(path + "/private.key");
-		FileInputStream fis = new FileInputStream(path + "/private.key");
+		File filePrivateKey = new File(keyPath + File.separator + "private.key");
+		FileInputStream fis = new FileInputStream(filePrivateKey);
 		byte[] encodedPrivateKey = new byte[(int) filePrivateKey.length()];
 		fis.read(encodedPrivateKey);
 		fis.close();
@@ -162,8 +146,7 @@ public class Keys
 	}
 
 	public static byte[] encryptAES(PublicKey key, SecretKey AES)
-			throws NoSuchAlgorithmException, NoSuchPaddingException,
-			IllegalBlockSizeException, BadPaddingException, InvalidKeyException
+			throws Exception
 	{
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -173,10 +156,7 @@ public class Keys
 	}
 
 	public static String encryptString(String plainText, SecretKey key)
-			throws IllegalBlockSizeException, BadPaddingException,
-			InvalidKeyException, NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException,
-			InvalidParameterSpecException, InvalidAlgorithmParameterException
+			throws Exception
 	{
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		SecretKeySpec secretKey = new SecretKeySpec(key.getEncoded(), "AES");
@@ -188,10 +168,7 @@ public class Keys
 	}
 
 	public static String decryptString(String encryptedText, PrivateKey key,
-			byte[] encryptedAES) throws IllegalBlockSizeException,
-			BadPaddingException, InvalidKeyException, NoSuchAlgorithmException,
-			NoSuchProviderException, NoSuchPaddingException,
-			InvalidAlgorithmParameterException
+			byte[] encryptedAES) throws Exception
 	{
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.DECRYPT_MODE, key);

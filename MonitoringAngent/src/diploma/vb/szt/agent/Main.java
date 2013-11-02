@@ -1,6 +1,7 @@
 package diploma.vb.szt.agent;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 import javax.crypto.SecretKey;
@@ -12,58 +13,70 @@ public class Main
 {
 	private final static String ITEM = "item";
 
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args)
 	{
-		Sigar sigar = new Sigar();
-		Os os = new Os(sigar);
-		Cpu cpu = new Cpu(sigar);
-		Storage storage = new Storage(sigar);
-		Memory memory = new Memory(sigar);
-		Process process = new Process(sigar);
+		try
+		{
+			Sigar sigar = new Sigar();
+			Os os = new Os(sigar);
+			Cpu cpu = new Cpu(sigar);
+			Storage storage = new Storage(sigar);
+			Memory memory = new Memory(sigar);
+			Process process = new Process(sigar);
 
-		ArrayList<MonitoredItem> items = new ArrayList<MonitoredItem>();
-		items.add(os);
-		items.add(cpu);
-		items.add(storage);
-		items.add(memory);
-		items.add(process);
+			ArrayList<MonitoredItem> items = new ArrayList<MonitoredItem>();
+			items.add(os);
+			items.add(cpu);
+			items.add(storage);
+			items.add(memory);
+			items.add(process);
 
-		String result = "<?xml version=\"1.0\" ?> " + "<" + ITEM + ">";
+			String xmlData = "<?xml version=\"1.0\"?>" + "<" + ITEM + ">";
 
-		for (MonitoredItem item : items)
-			result += item.toXml();
+			for (MonitoredItem item : items)
+				xmlData += item.toXml();
 
-		result = result + "</" + ITEM + ">";
+			xmlData = xmlData + "</" + ITEM + ">";
 
-		System.out.println(result);
+			System.out.println(xmlData);
 
-		XMLConfiguration configer = new XMLConfiguration("config.xml");
+			XMLConfiguration configer = new XMLConfiguration("config.xml");
 
-		String keyPath = (String) configer.getProperty("Key.Path");
-		int keyLength = Integer.valueOf((String) configer
-				.getProperty("Key.Length"));
+			SecretKey aesKey = Keys.generateSymmetricKey();
+			KeyPair keyPair = Keys.getKeyPair();
+			String result = Keys.encryptString(xmlData, aesKey);
+			byte[] encryptedAES = Keys.encryptAES(keyPair.getPublic(), aesKey);
 
-		SecretKey aesKey = Keys.generateSymmetricKey();
-		KeyPair keyPair = Keys.getKeyPair(keyPath, keyLength);
-		result = Keys.encryptString(result, aesKey);
-		byte[] encryptedAES = Keys.encryptAES(keyPair.getPublic(), aesKey);
+			// TODO minta
+			System.out.println("2: "
+					+ Keys.decryptString(result, keyPair.getPrivate(),
+							encryptedAES));
 
-		// TODO minta
-		System.out
-				.println("2: "
-						+ Keys.decryptString(result, keyPair.getPrivate(),
-								encryptedAES));
+			String macAddress = Communication.getMacAddress();
 
-		String macAddress = Communication.getMacAddress();
+			String protocol = (String) configer.getProperty("Server.Protocol");
+			String address = (String) configer.getProperty("Server.Address");
+			String port = (String) configer.getProperty("Server.Port");
+			String url = protocol + "://" + address + ":" + port;
 
-		String protocol = (String) configer.getProperty("Server.Protocol");
-		String address = (String) configer.getProperty("Server.Address");
-		String port = (String) configer.getProperty("Server.Port");
-		String url = protocol + "://" + address + ":" + port;
+			int agentId = Communication.register(
+					url + "/monitor/registerAgent", macAddress, keyPair
+							.getPublic().getEncoded());
 
-		Communication.register(url + "/monitor/registerAgent", macAddress,
-				keyPair.getPublic().getEncoded());
+			IO.saveAgentId(agentId);
 
-//		 Communication.sendData(url + "/monitor/postData", result);
+			PublicKey serverPublicKey = Keys.loadServerPublicKey();
+
+			String encryptedData = Keys.encryptString(xmlData, aesKey);
+			String encryptedAgentId = Keys.encryptString("" + agentId, aesKey);
+			byte[] encryptedAES2 = Keys.encryptAES(serverPublicKey, aesKey);
+
+			Communication.sendData(url + "/monitor/postData", encryptedData,
+					encryptedAgentId, encryptedAES2);
+
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

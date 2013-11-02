@@ -1,5 +1,7 @@
 package thesis.vb.szt.server.entity;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,12 +30,12 @@ public class Report
 	private int memoryFreePercent;
 	
 	@Column(name = "cpuCoreNumber")
-	private int coreNumber;
+	private int cpuCoreNumber;
 	
 	@Column(name = "cpuFrequency")
 	private int cpuFrequency;
 	
-	@Column(name = "cpuVencor")
+	@Column(name = "cpuVendor")
 	private String cpuVendor;
 	
 	@Column(name = "storageSizeGb")
@@ -53,4 +55,147 @@ public class Report
 	
 	@Column(name = "processCount")
 	private int processCount;
+	
+	@Column(name = "timeStamp")
+	private Date timeStamp;
+
+	public int getId()
+	{
+		return id;
+	}
+
+	public void setId(int id)
+	{
+		this.id = id;
+	}
+
+	public Agent getAgent()
+	{
+		return agent;
+	}
+
+	public void setAgent(Agent agent)
+	{
+		this.agent = agent;
+	}
+
+	public int getMemorySizeMb()
+	{
+		return memorySizeMb;
+	}
+
+	public void setMemorySizeMb(int memorySizeMb)
+	{
+		this.memorySizeMb = memorySizeMb;
+	}
+
+	public int getMemoryFreePercent()
+	{
+		return memoryFreePercent;
+	}
+
+	public void setMemoryFreePercent(int memoryFreePercent)
+	{
+		this.memoryFreePercent = memoryFreePercent;
+	}
+
+	public int getCpuCoreNumber()
+	{
+		return cpuCoreNumber;
+	}
+
+	public void setCpuCoreNumber(int coreNumber)
+	{
+		this.cpuCoreNumber = coreNumber;
+	}
+
+	public int getCpuFrequency()
+	{
+		return cpuFrequency;
+	}
+
+	public void setCpuFrequency(int cpuFrequency)
+	{
+		this.cpuFrequency = cpuFrequency;
+	}
+
+	public String getCpuVendor()
+	{
+		return cpuVendor;
+	}
+
+	public void setCpuVendor(String cpuVendor)
+	{
+		this.cpuVendor = cpuVendor;
+	}
+
+	public int getStorageSizeGb()
+	{
+		return storageSizeGb;
+	}
+
+	public void setStorageSizeGb(int storageSizeGb)
+	{
+		this.storageSizeGb = storageSizeGb;
+	}
+
+	public int getStorageFreeGb()
+	{
+		return storageFreeGb;
+	}
+
+	public void setStorageFreeGb(int storageFreeGb)
+	{
+		this.storageFreeGb = storageFreeGb;
+	}
+
+	public String getArchitecture()
+	{
+		return architecture;
+	}
+
+	public void setArchitecture(String architecture)
+	{
+		this.architecture = architecture;
+	}
+
+	public String getOsName()
+	{
+		return osName;
+	}
+
+	public void setOsName(String osName)
+	{
+		this.osName = osName;
+	}
+
+	public String getOsVersion()
+	{
+		return osVersion;
+	}
+
+	public void setOsVersion(String osVersion)
+	{
+		this.osVersion = osVersion;
+	}
+
+	public int getProcessCount()
+	{
+		return processCount;
+	}
+
+	public void setProcessCount(int processCount)
+	{
+		this.processCount = processCount;
+	}
+
+	public Date getTimeStamp()
+	{
+		return timeStamp;
+	}
+
+	public void setTimeStamp(Date timeStamp)
+	{
+		this.timeStamp = timeStamp;
+	}	
 }
