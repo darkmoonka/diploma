@@ -21,7 +21,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.configuration.XMLConfiguration;
 
-
 public class Keys
 {
 	public static KeyPair getKeyPair() throws Exception
@@ -30,9 +29,8 @@ public class Keys
 
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
 
-		String keyPath = (String) configer.getProperty("Key.Path");
-		int keyLength = Integer.valueOf((String) configer
-				.getProperty("Key.Length"));
+		String keyPath = configer.getString("Key.Path");
+		int keyLength = configer.getInt("Key.Length");
 
 		File publicKeyPath = new File(keyPath + File.separator + "public.key");
 		File privateKeyPath = new File(keyPath + File.separator + "private.key");
@@ -54,8 +52,7 @@ public class Keys
 		return keyPair;
 	}
 
-	private static KeyPair generateKeyPair(int keyLength)
-			throws NoSuchAlgorithmException
+	private static KeyPair generateKeyPair(int keyLength) throws NoSuchAlgorithmException
 	{
 		KeyPair keyPair;
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -64,15 +61,13 @@ public class Keys
 		return keyPair;
 	}
 
-	private static void saveKeyPair(String path, KeyPair keyPair)
-			throws IOException
+	private static void saveKeyPair(String path, KeyPair keyPair) throws IOException
 	{
 		PrivateKey privateKey = keyPair.getPrivate();
 		PublicKey publicKey = keyPair.getPublic();
 
 		// Store Public Key.
-		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
-				publicKey.getEncoded());
+		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
 		File file = new File(path);
 		if (!file.exists())
 			file.mkdir();
@@ -111,7 +106,7 @@ public class Keys
 	public static PublicKey loadPublicKey() throws Exception
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String keyPath = (String) configer.getProperty("Key.Path");
+		String keyPath = configer.getString("Key.Path");
 
 		// Read Public Key.
 		File filePublicKey = new File(keyPath + File.separator + "public.key");
@@ -121,15 +116,14 @@ public class Keys
 		fis.close();
 
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(
-				encodedPublicKey);
+		X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedPublicKey);
 		return keyFactory.generatePublic(publicKeySpec);
 	}
 
 	public static PrivateKey loadPrivateKey() throws Exception
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String keyPath = (String) configer.getProperty("Key.Path");
+		String keyPath = configer.getString("Key.Path");
 
 		// Read Private Key.
 		File filePrivateKey = new File(keyPath + File.separator + "private.key");
@@ -138,15 +132,13 @@ public class Keys
 		fis.read(encodedPrivateKey);
 		fis.close();
 
-		PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(
-				encodedPrivateKey);
+		PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(encodedPrivateKey);
 
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		return keyFactory.generatePrivate(privateKeySpec);
 	}
 
-	public static byte[] encryptAES(PublicKey key, SecretKey AES)
-			throws Exception
+	public static byte[] encryptAES(PublicKey key, SecretKey AES) throws Exception
 	{
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -155,14 +147,13 @@ public class Keys
 		return encryptedAES;
 	}
 
-	public static String encryptString(String plainText, SecretKey key)
-			throws Exception
+	public static String encryptString(String plainText, SecretKey key) throws Exception
 	{
 		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 		SecretKeySpec secretKey = new SecretKeySpec(key.getEncoded(), "AES");
 		cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-		String encryptedString = Base64.encodeBase64String(cipher
-				.doFinal(plainText.getBytes()));
+		String encryptedString = Base64
+				.encodeBase64String(cipher.doFinal(plainText.getBytes()));
 
 		return encryptedString;
 	}
@@ -177,14 +168,12 @@ public class Keys
 		cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
 		SecretKeySpec secretKey = new SecretKeySpec(plainAES, "AES");
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);
-		String decryptedString = new String(cipher.doFinal(Base64
-				.decodeBase64(encryptedText)));
+		String decryptedString = new String(cipher.doFinal(Base64.decodeBase64(encryptedText)));
 
 		return decryptedString;
 	}
 
-	public static SecretKey generateSymmetricKey()
-			throws NoSuchAlgorithmException
+	public static SecretKey generateSymmetricKey() throws NoSuchAlgorithmException
 	{
 		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 		return keyGenerator.generateKey();

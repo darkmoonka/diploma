@@ -9,4 +9,8 @@
 		<Length>2048</Length>
 		<Path>Keys</Path>
 	</Key>
+	<Agent>
+		<idFile>agentId.txt</idFile>
+		<repeatPeriod>10000</repeatPeriod>
+	</Agent>
 </Settings>

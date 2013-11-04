@@ -10,10 +10,8 @@
 
 	<c:if test="${!empty reportList}">
 		<table>
-			<c:forEach items="${reportList}" var="report">
-				<tr>
+		<tr>
 					<th>Id</th>
-					<th>Agent id</th>
 					<th>Size of memory(MB)</th>
 					<th>Free memory(%)</th>
 					<th>Number of cpu cores</th>
@@ -27,9 +25,10 @@
 					<th>Process count</th>
 					<th>Time stamp</th>
 				</tr>
+			<c:forEach items="${reportList}" var="report">
+				
 		    <tr>
 					<td>${report.id}</td>
-					<td>${report.agent}</td>
 					<td>${report.memorySizeMb}</td>
 					<td>${report.memoryFreePercent}</td>
 					<td>${report.cpuCoreNumber}</td>

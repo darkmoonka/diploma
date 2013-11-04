@@ -30,9 +30,8 @@ public class Keys
 
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
 
-		String keyPath = (String) configer.getProperty("Key.Path");
-		int keyLength = Integer.valueOf((String) configer
-				.getProperty("Key.Length"));
+		String keyPath = configer.getString("Key.Path");
+		int keyLength = configer.getInt("Key.Length");
 
 		File publicKeyPath = new File(keyPath + File.separator + "public.key");
 		File privateKeyPath = new File(keyPath + File.separator + "private.key");
@@ -111,7 +110,7 @@ public class Keys
 	public static PublicKey loadPublicKey() throws Exception
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String keyPath = (String) configer.getProperty("Key.Path");
+		String keyPath = configer.getString("Key.Path");
 
 		// Read Public Key.
 		File filePublicKey = new File(keyPath + File.separator + "public.key");
@@ -129,7 +128,7 @@ public class Keys
 	public static PrivateKey loadPrivateKey() throws Exception
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String keyPath = (String) configer.getProperty("Key.Path");
+		String keyPath = configer.getString("Key.Path");
 
 		// Read Private Key.
 		File filePrivateKey = new File(keyPath + File.separator + "private.key");
@@ -194,7 +193,7 @@ public class Keys
 			throws IOException, ConfigurationException
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String path = (String) configer.getProperty("Key.Path");
+		String path = configer.getString("Key.Path");
 
 		// Store Public Key.
 		X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(
@@ -215,24 +214,25 @@ public class Keys
 	public static PublicKey loadServerPublicKey() throws Exception
 	{
 		XMLConfiguration configer = new XMLConfiguration("config.xml");
-		String keyPath = (String) configer.getProperty("Key.Path");
+		String keyPath = configer.getString("Key.Path");
 
 		// Read Public Key.
-		File filePublicKey = new File(keyPath + File.separator + "serverPublic.key");
-		
-		if(!filePublicKey.exists())
+		File filePublicKey = new File(keyPath + File.separator
+				+ "serverPublic.key");
+
+		if (!filePublicKey.exists())
 		{
-			String protocol = (String) configer.getProperty("Server.Protocol");
-			String address = (String) configer.getProperty("Server.Address");
-			String port = (String) configer.getProperty("Server.Port");
+			String protocol = configer.getString("Server.Protocol");
+			String address = configer.getString("Server.Address");
+			String port = configer.getString("Server.Port");
 			String url = protocol + "://" + address + ":" + port;
 			url = url + "/monitor/getPublicKey";
-			
+
 			PublicKey serverPublicKey = Communication.getServerPublicKey(url);
 			saveServerPublicKey(serverPublicKey);
 			return serverPublicKey;
 		}
-		
+
 		FileInputStream fis = new FileInputStream(filePublicKey);
 		byte[] encodedPublicKey = new byte[(int) filePublicKey.length()];
 		fis.read(encodedPublicKey);
