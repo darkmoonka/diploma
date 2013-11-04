@@ -83,6 +83,7 @@ public class Main
 						aesKey);
 				byte[] encryptedAES2 = Keys.encryptAES(serverPublicKey, aesKey);
 
+				items = null;
 				os = null;
 				cpu = null;
 				storage = null;
