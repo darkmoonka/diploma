@@ -22,12 +22,15 @@ public class Main
 			Sigar sigar = new Sigar();
 
 			KeyPair keyPair = Keys.getKeyPair();
-			String macAddress = Communication.getMacAddress();
 
 			String protocol = configer.getString("Server.Protocol");
 			String address = configer.getString("Server.Address");
 			String port = configer.getString("Server.Port");
 			String url = protocol + "://" + address + ":" + port;
+
+			String agentName = configer.getString("Agent.Name");
+			String contactName = configer.getString("Contact.Name");
+			String contactEmail = configer.getString("Contact.Email");
 
 			String agentIdFile = configer.getString("Agent.idFile");
 			File agentFile = new File(agentIdFile);
@@ -37,8 +40,10 @@ public class Main
 			if (!agentFile.exists())
 			{
 				agentId = Communication.register(
-						url + "/monitor/registerAgent", macAddress, keyPair
-								.getPublic().getEncoded());
+						url + "/monitor/registerAgent", keyPair.getPublic()
+								.getEncoded(), agentName, contactName,
+						contactEmail);
+				
 				IO.saveAgentId(agentId);
 			} else
 			{
@@ -92,7 +97,7 @@ public class Main
 
 				Communication.sendData(url + "/monitor/postData",
 						encryptedData, encryptedAgentId, encryptedAES2);
-				
+
 				configer = new XMLConfiguration("config.xml");
 				int repeatPeriod = configer.getInt("Agent.repeatPeriod");
 				Thread.sleep(repeatPeriod);

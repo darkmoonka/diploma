@@ -21,6 +21,15 @@ public class Agent
 	@Column(name = "publicKey", length = 2048)
 	private byte[] publicKey;
 
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "contactName")
+	private String contactName;
+
+	@Column(name = "contactEmail")
+	private String contactEmail;
+
 	public byte[] getPublicKey()
 	{
 		return publicKey;
@@ -49,5 +58,35 @@ public class Agent
 	public void setId(int id)
 	{
 		this.id = id;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public String getContactName()
+	{
+		return contactName;
+	}
+
+	public void setContactName(String contactName)
+	{
+		this.contactName = contactName;
+	}
+
+	public String getContactEmail()
+	{
+		return contactEmail;
+	}
+
+	public void setContactEmail(String contactEmail)
+	{
+		this.contactEmail = contactEmail;
 	}
 }

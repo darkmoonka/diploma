@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -37,6 +38,7 @@ import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Report;
 import thesis.vb.szt.server.security.Keys;
 import thesis.vb.szt.server.util.CommunicationData;
+import thesis.vb.szt.server.util.Mail;
 
 @Controller
 public class DataController
@@ -46,6 +48,9 @@ public class DataController
 
 	@Autowired
 	private Marshaller marshaller;
+
+	@Autowired
+	private Mail mail;
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String getHomePage()
@@ -66,45 +71,52 @@ public class DataController
 			PrivateKey privateKey = Keys.loadPrivateKey();
 			String agentId = Keys.decryptString(encryptedAgentId, privateKey, encryptedAESKey);
 			String data = Keys.decryptString(encryptedData, privateKey, encryptedAESKey);
-			
+
 			Agent agent = dao.getAgentById(Integer.parseInt(agentId));
-			
-			if(agent == null)
+
+			if (agent == null)
 				return;
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(new InputSource(new ByteArrayInputStream(data
-					.getBytes("utf-8"))));
-			doc.getDocumentElement().normalize();
-			NodeList nList = doc.getElementsByTagName("item");
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder documentBuilder = dbf.newDocumentBuilder();
+			Document document = documentBuilder.parse(new InputSource(
+					new ByteArrayInputStream(data.getBytes("utf-8"))));
+			document.getDocumentElement().normalize();
+			NodeList nodeList = document.getElementsByTagName("item");
 
-			Node nNode = nList.item(0);
+			Node node = nodeList.item(0);
 
-			Element eElement = (Element) nNode;
+			Element element = (Element) node;
 
-			String osName = eElement.getElementsByTagName("osName").item(0).getTextContent();
-			String osVersion = eElement.getElementsByTagName("osVersion").item(0)
+			NodeList nl = node.getChildNodes();
+
+			// TODO add get specials
+			for (int i = 0; i < nl.getLength(); i++)
+			{
+				System.out.println(nl.item(i).getNodeName());
+			}
+
+			String osName = element.getElementsByTagName("osName").item(0).getTextContent();
+			String osVersion = element.getElementsByTagName("osVersion").item(0)
 					.getTextContent();
-			String architecture = eElement.getElementsByTagName("architecture").item(0)
+			String architecture = element.getElementsByTagName("architecture").item(0)
 					.getTextContent();
-			int coreNumber = Integer.parseInt(eElement.getElementsByTagName("coreNumber")
+			int coreNumber = Integer.parseInt(element.getElementsByTagName("coreNumber")
 					.item(0).getTextContent());
-			int frequency = Integer.parseInt(eElement.getElementsByTagName("frequency")
-					.item(0).getTextContent());
-			String vendor = eElement.getElementsByTagName("vendor").item(0).getTextContent();
-			int storageSizeGb = Integer.parseInt(eElement.getElementsByTagName("sizeGb").item(0)
+			int frequency = Integer.parseInt(element.getElementsByTagName("frequency").item(0)
 					.getTextContent());
-			int storageSizeFreeGb = Integer.parseInt(eElement.getElementsByTagName("SizeFreeGb")
+			String vendor = element.getElementsByTagName("vendor").item(0).getTextContent();
+			int storageSizeGb = Integer.parseInt(element.getElementsByTagName("sizeGb")
 					.item(0).getTextContent());
-			int memorySizeMb = Integer.parseInt(eElement.getElementsByTagName("sizeMb").item(0)
+			int storageSizeFreeGb = Integer.parseInt(element
+					.getElementsByTagName("SizeFreeGb").item(0).getTextContent());
+			int memorySizeMb = Integer.parseInt(element.getElementsByTagName("sizeMb").item(0)
 					.getTextContent());
-			int memoryFreePercent = Integer.parseInt(eElement.getElementsByTagName("freePercent")
+			int memoryFreePercent = Integer.parseInt(element
+					.getElementsByTagName("freePercent").item(0).getTextContent());
+			int processCount = Integer.parseInt(element.getElementsByTagName("processCount")
 					.item(0).getTextContent());
-			int processCount = Integer.parseInt(eElement.getElementsByTagName("processCount")
-					.item(0).getTextContent());
-			
-			
+
 			Report report = new Report();
 			report.setAgent(agent);
 			report.setArchitecture(architecture);
@@ -119,14 +131,13 @@ public class DataController
 			report.setStorageFreeGb(storageSizeFreeGb);
 			report.setStorageSizeGb(storageSizeGb);
 			report.setTimeStamp(new Date());
-			
+
 			dao.saveReport(report);
 
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-
 
 		// Logger logger = Logger.getLogger("Data Controller");
 		// logger.info("Received request to post data: " + data);
@@ -138,7 +149,10 @@ public class DataController
 	public @ResponseBody
 	void registerAgent(HttpServletResponse response,
 			@RequestParam("macAddress") String macAddress,
-			@RequestParam("publicKey") MultipartFile publicKey)
+			@RequestParam("publicKey") MultipartFile publicKey,
+			@RequestParam("agentName") String agentName,
+			@RequestParam("contactName") String contactName,
+			@RequestParam("contactEmail") String contactEmail)
 	{
 		try
 		{
@@ -155,6 +169,9 @@ public class DataController
 				agent = new Agent();
 				agent.setAddress(macAddress);
 				agent.setPublicKey(agentPublicKey);
+				agent.setContactEmail(contactEmail);
+				agent.setContactName(contactName);
+				agent.setName(agentName);
 				agent.setId(dao.saveAgent(agent));
 			}
 
@@ -196,7 +213,6 @@ public class DataController
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
 	public String list(Model model)
 	{
-
 		List<Report> reportList = dao.getAllReports();
 		model.addAttribute("reportList", reportList);
 

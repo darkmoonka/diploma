@@ -30,6 +30,25 @@
 		<property name="dao" ref="dao"></property>
 	</bean>
 
+	<!-- Mail sender -->
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="587" />
+		<property name="username" value="noreply.system.monitor" />
+		<property name="password" value="Cw15x85DYTsDYKg" />
+
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.starttls.enable">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mail" class="thesis.vb.szt.server.util.Mail">
+		<property name="mailSender" ref="mailSender" />
+	</bean>
+
 
 	<!-- ****************************JAXB************************************* -->
 

@@ -58,14 +58,18 @@ public class Communication
 		return sb.toString();
 	}
 
-	static int register(String url, String macAddress, byte[] publicKey)
-			throws Exception
+	static int register(String url, byte[] publicKey, String agentName,
+			String contactName, String contactEmail) throws Exception
 	{
+		String macAddress = getMacAddress();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost postRequest = new HttpPost(url);
 		MultipartEntity reqEntity = new MultipartEntity(
 				HttpMultipartMode.BROWSER_COMPATIBLE);
 		reqEntity.addPart("macAddress", new StringBody(macAddress));
+		reqEntity.addPart("agentName", new StringBody(agentName));
+		reqEntity.addPart("contactName", new StringBody(contactName));
+		reqEntity.addPart("contactEmail", new StringBody(contactEmail));
 		reqEntity.addPart("publicKey", new ByteArrayBody(publicKey, ""));
 		postRequest.setEntity(reqEntity);
 		HttpResponse response = httpClient.execute(postRequest);

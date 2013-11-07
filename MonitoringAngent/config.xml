@@ -11,6 +11,11 @@
 	</Key>
 	<Agent>
 		<idFile>agentId.txt</idFile>
-		<repeatPeriod>10000</repeatPeriod>
+		<repeatPeriod>200000</repeatPeriod>
+		<Name>Almafa</Name>
 	</Agent>
+	<Contact>
+		<Name>Pista</Name>
+		<Email>ds@d.h</Email>
+	</Contact>
 </Settings>
