@@ -6,8 +6,11 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.Marshaller;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,7 +30,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -55,6 +56,21 @@ public class DataController
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String getHomePage()
 	{
+		String mac = "alma";
+		List<String> attributes = new ArrayList<String>();
+		attributes.add(new String("attribute1"));
+		attributes.add(new String("attribute2"));
+		dao.createReportTable(attributes, mac);
+
+		Map<String, String> report = new HashMap<String, String>();
+		report.put("attribute1", "pina");
+		report.put("attribute2", "fasz");
+//		dao.insertReport(report, mac);
+//		dao.insertReport(report, mac);
+		
+		dao.listReports(-2, mac);
+		dao.listReports(1, mac);
+
 		return "index";
 	}
 
@@ -210,13 +226,13 @@ public class DataController
 		return result;
 	}
 
-	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String list(Model model)
-	{
-		List<Report> reportList = dao.getAllReports();
-		model.addAttribute("reportList", reportList);
-
-		return "index";
-	}
+	// @RequestMapping(value = "/index", method = RequestMethod.GET)
+	// public String list(Model model)
+	// {
+	// List<Report> reportList = dao.getAllReports();
+	// model.addAttribute("reportList", reportList);
+	//
+	// return "index";
+	// }
 
 }
