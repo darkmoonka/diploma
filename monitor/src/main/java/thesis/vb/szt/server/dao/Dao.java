@@ -3,6 +3,7 @@ package thesis.vb.szt.server.dao;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -191,7 +192,7 @@ public class Dao
 
 		if (count > 0)
 		{
-			logger.info("Listing last " + count + "reports from " + TABLE_PREFIX + mac);
+			logger.info("Listing last " + count + " reports from " + TABLE_PREFIX + mac);
 			q.setMaxResults(count);
 		} else
 		{
@@ -290,10 +291,11 @@ public class Dao
 	{
 		List<String> result = new ArrayList<String>();
 		DatabaseMetaData databaseMetaData;
+		Connection conn = null;
 		try
 		{
-			Connection c = dataSource.getConnection();
-			databaseMetaData = c.getMetaData();
+			conn = dataSource.getConnection();
+			databaseMetaData = conn.getMetaData();
 
 			ResultSet columns = databaseMetaData.getColumns("monitor", "monitor", "Report_"
 					+ mac, null);
@@ -321,6 +323,14 @@ public class Dao
 		{
 			logger.error("Unable to get table columns", e);
 			return null;
+		} finally {
+			try
+			{
+				conn.close();
+			} catch (Exception e)
+			{
+				logger.error("Unable to close database connection", e);
+			}
 		}
 	}
 

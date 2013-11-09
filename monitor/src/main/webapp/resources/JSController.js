@@ -1,41 +1,21 @@
 window.setInterval(refresh, 4000);
 
 function refresh() { 
+//	console.log("0");
 	jq.ajax({
 		url: "list",
 		type: "GET",
 		success: function (data) {	
+			
 			var table = jq.parseJSON( data );
-			console.log(table);
 			
-			var columnNames = table[0];
-			
-//			for(var i = 1; i < table.length; i++) {
-//				var row = table[i];
-//				console.log("Row: " + row);
-////				for(var j = 0; row.length; j++) {
-////					console.log("3");
-////					console.log(row);
-////				}
-//				var j = 0;
-//				for(var column in row){
-//					console.log("Column: " + columnNames[j] + " " + column);
-//					j++;
-//				};
-//			};
-			
-			for(var row in table) {
-				for(var column in row) {
-					console.log(column);
-					console.log(row[column]);
-				}
+			for(var i = 0; i < table.length; i++) {
+				for(var key in table[i]) {
+					console.log("Key: " + key);
+					console.log("Value: " + table[i][key]);
+				} 
 			}
-//			table.each(function(index, row) {
-////				
-////				row.each(function(index, column) {
-//					console.log(row);
-//				});
-//			});
+			
 		}
 	});
 	
