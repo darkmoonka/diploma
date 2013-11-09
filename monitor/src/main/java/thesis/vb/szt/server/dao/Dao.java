@@ -19,11 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
-
 import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Report;
-import thesis.vb.szt.server.entity.ReportInstance;
 
 @Transactional
 @Repository
@@ -161,14 +158,16 @@ public class Dao
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString.toString());
 		int insertNum = 0;
-		
-		try {
+
+		try
+		{
 			insertNum = q.executeUpdate();
-		} catch (Exception e){
+		} catch (Exception e)
+		{
 			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
-		
+
 		if (insertNum == 1)
 		{
 			logger.info("Created report " + mac);
@@ -183,37 +182,55 @@ public class Dao
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> listReports (int count, String mac) {
-		List<Map<String, String>> result = new ArrayList<Map<String,String>>();
-		
+	public List<Map<String, String>> listReports(int count, String mac)
+	{
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+
 		String queryString = "SELECT * FROM " + TABLE_PREFIX + mac;
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
-		
-		if(count > 0) {
+
+		if (count > 0)
+		{
 			logger.info("Listing last " + count + "reports from " + TABLE_PREFIX + mac);
 			q.setMaxResults(count);
-		} else {
+		} else
+		{
 			logger.info("Listing reports from " + TABLE_PREFIX + mac);
 		}
-		
+
 		List<String> reportKeys = getReportAttributes(mac);
-		List<List<String>> table = (List<List<String>>)q.list();
+		List<Object[]> table = (List<Object[]>) q.list();
 		int reportAttrNum = reportKeys.size();
-		
-		for(int i = 0; i < reportAttrNum; i++) {
-			
-			for(int row = 0; row < table.size(); row++) {
+
+		for (int i = 0; i < reportAttrNum; i++)
+		{
+			for (int row = 0; row < table.size(); row++)
+			{
 				Map<String, String> reportInstance = new HashMap<String, String>();
-				for(int column = 0; column < table.get(i).size(); column++) {
-					reportInstance.put(reportKeys.get(i), table.get(row).get(column));
+				Object tableValues[] = table.get(row);
+				int tableValuesLength = tableValues.length;
+				for (int column = 0; column < tableValuesLength; column++)
+				{
+					reportInstance.put(reportKeys.get(i), tableValues[column].toString());
 				}
 				result.add(reportInstance);
 			}
 		}
-		
+//		for (int i = 0; i < reportAttrNum; i++)
+//		{
+//			//TODO if j == 0
+//			for(int j = 0; j < table.get(i).size(); j++)
+//			{
+//				Map<String, String> reportInstance = new HashMap<String, String>();
+//				reportInstance.put(reportKeys.get(i), table.get(i).get(j));
+//				result.add(reportInstance);
+//			}
+//
+//		}
+
 		return result;
 	}
-	
+
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
 		// INSERT INTO table_name (column1,column2,column3,...)

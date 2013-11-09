@@ -65,7 +65,7 @@ public class DataController
 		Map<String, String> report = new HashMap<String, String>();
 		report.put("attribute1", "pina");
 		report.put("attribute2", "fasz");
-//		dao.insertReport(report, mac);
+		dao.insertReport(report, mac);
 //		dao.insertReport(report, mac);
 		
 		dao.listReports(-2, mac);
