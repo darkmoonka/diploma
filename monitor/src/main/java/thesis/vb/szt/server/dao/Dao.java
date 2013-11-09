@@ -211,22 +211,13 @@ public class Dao
 				int tableValuesLength = tableValues.length;
 				for (int column = 0; column < tableValuesLength; column++)
 				{
-					reportInstance.put(reportKeys.get(i), tableValues[column].toString());
+					String key = reportKeys.get(column);
+					String value = tableValues[column].toString();
+					reportInstance.put(key, value);
 				}
 				result.add(reportInstance);
 			}
 		}
-//		for (int i = 0; i < reportAttrNum; i++)
-//		{
-//			//TODO if j == 0
-//			for(int j = 0; j < table.get(i).size(); j++)
-//			{
-//				Map<String, String> reportInstance = new HashMap<String, String>();
-//				reportInstance.put(reportKeys.get(i), table.get(i).get(j));
-//				result.add(reportInstance);
-//			}
-//
-//		}
 
 		return result;
 	}

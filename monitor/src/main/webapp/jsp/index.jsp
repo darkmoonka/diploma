@@ -47,4 +47,10 @@
 	</c:if>
 
 </body>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="resources/JSController.js"></script>
+<script type="text/javascript">
+	var jq = jQuery.noConflict();
+</script>
 </html>

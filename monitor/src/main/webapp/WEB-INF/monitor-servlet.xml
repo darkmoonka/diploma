@@ -50,7 +50,7 @@
 	            <bean
 	                class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
 	                <property name="objectMapper">
-	                    <ref bean="JacksonObjectMapper" />
+	                    <ref bean="objectMapper" />
 	                </property>
 	            </bean>
 	            <bean id="poi" class="org.springframework.web.servlet.view.xml.MarshallingView">

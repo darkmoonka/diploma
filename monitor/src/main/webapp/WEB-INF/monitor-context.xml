@@ -64,7 +64,7 @@
 
 	<!-- **************************JACKSON************************************* -->
 
-	<bean id="JacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+	<bean id="objectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
 
 
 	<!-- <bean -->

@@ -1,6 +1,7 @@
 package thesis.vb.szt.server.controller;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -20,6 +21,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.Marshaller;
 import org.springframework.stereotype.Controller;
@@ -49,29 +53,48 @@ public class DataController
 
 	@Autowired
 	private Marshaller marshaller;
+	
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Autowired
 	private Mail mail;
+	
+	protected static Logger logger = Logger.getLogger("DataController");
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String getHomePage()
 	{
-		String mac = "alma";
-		List<String> attributes = new ArrayList<String>();
-		attributes.add(new String("attribute1"));
-		attributes.add(new String("attribute2"));
-		dao.createReportTable(attributes, mac);
-
-		Map<String, String> report = new HashMap<String, String>();
-		report.put("attribute1", "pina");
-		report.put("attribute2", "fasz");
-		dao.insertReport(report, mac);
+//		String mac = "alma";
+//		List<String> attributes = new ArrayList<String>();
+//		attributes.add(new String("attribute1"));
+//		attributes.add(new String("attribute2"));
+//		dao.createReportTable(attributes, mac);
+//
+//		Map<String, String> report = new HashMap<String, String>();
+//		report.put("attribute1", "pina");
+//		report.put("attribute2", "fasz");
+//		dao.insertReport(report, mac);
 //		dao.insertReport(report, mac);
 		
-		dao.listReports(-2, mac);
-		dao.listReports(1, mac);
+//		dao.listReports(-2, mac);
+//		dao.listReports(1, mac);
 
 		return "index";
+	}
+	
+	@RequestMapping(value="/list", method=RequestMethod.GET)
+	public @ResponseBody String list() {
+		List<Map<String, String>> reportList = dao.listReports(10, "alma");
+		try
+		{
+			String result = objectMapper.writeValueAsString(reportList);
+			return result;
+		} catch (IOException e)
+		{
+			logger.error("Unable to marshal reports", e);
+		}
+		return null;
 	}
 
 	@RequestMapping(value = "/postData", method = RequestMethod.POST)
