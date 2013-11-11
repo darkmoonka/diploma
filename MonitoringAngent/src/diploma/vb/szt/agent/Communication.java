@@ -2,6 +2,7 @@ package diploma.vb.szt.agent;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -11,8 +12,10 @@ import java.net.UnknownHostException;
 import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.codec.binary.Base64;
@@ -55,26 +58,41 @@ public class Communication
 			sb.append(String.format("%02X%s", mac[i],
 					(i < mac.length - 1) ? "-" : ""));
 		}
-		return sb.toString();
+		return sb.toString().replaceAll("-", "_");
 	}
 
 	static int register(String url, byte[] publicKey, String agentName,
-			String contactName, String contactEmail) throws Exception
+			List<String> monitoredFeatures, Contacts contacts)
+			throws Exception
 	{
 		String macAddress = getMacAddress();
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost postRequest = new HttpPost(url);
 		MultipartEntity reqEntity = new MultipartEntity(
 				HttpMultipartMode.BROWSER_COMPATIBLE);
+		
+		JAXBContext jaxbContext = JAXBContext
+				.newInstance(Contacts.class);
+		
+		Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+		
+		StringWriter stringWriter = new StringWriter();
+		jaxbMarshaller.marshal(contacts, stringWriter );
+		
+		String attributes = "";
+		for(String item: monitoredFeatures)
+			attributes += item + ",";
+		attributes = attributes.substring(0, attributes.length() -1);
+
 		reqEntity.addPart("macAddress", new StringBody(macAddress));
+		reqEntity.addPart("attributes", new StringBody(attributes));
 		reqEntity.addPart("agentName", new StringBody(agentName));
-		reqEntity.addPart("contactName", new StringBody(contactName));
-		reqEntity.addPart("contactEmail", new StringBody(contactEmail));
+		reqEntity.addPart("contacts", new StringBody(stringWriter.toString()));
 		reqEntity.addPart("publicKey", new ByteArrayBody(publicKey, ""));
 		postRequest.setEntity(reqEntity);
 		HttpResponse response = httpClient.execute(postRequest);
 
-		JAXBContext jaxbContext = JAXBContext
+		jaxbContext = JAXBContext
 				.newInstance(CommunicationData.class);
 		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 		CommunicationData communicationData = (CommunicationData) jaxbUnmarshaller

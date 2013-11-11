@@ -58,8 +58,15 @@
 		<property name="classesToBeBound">
 			<list>
 				<value>thesis.vb.szt.server.util.CommunicationData</value>
+				<value>thesis.vb.szt.server.entity.Contact</value>
+				<value>thesis.vb.szt.server.util.Contacts</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="jaxbConverter" class="thesis.vb.szt.server.controller.DataController">
+		<property name="marshaller" ref="marshaller"></property>
+		<property name="unMarshaller" ref="marshaller"></property>
 	</bean>
 
 	<!-- **************************JACKSON************************************* -->

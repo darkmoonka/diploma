@@ -6,7 +6,7 @@ import org.hyperic.sigar.SigarException;
 
 public class Process extends MonitoredItem
 {
-	private Sigar sigar;
+	private final Sigar sigar;
 	private long processCount;
 	
 	private final String PROCESSCOUNT = "processCount";

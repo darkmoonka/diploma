@@ -3,8 +3,10 @@ package thesis.vb.szt.server.dao;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import thesis.vb.szt.server.entity.Agent;
-import thesis.vb.szt.server.entity.Report;
 
 @Transactional
 @Repository
@@ -73,19 +74,6 @@ public class Dao
 			logger.error(
 					"Unable to add agent to database with address: " + agent.getAddress(), e);
 			return null;
-		}
-	}
-
-	public void saveReport(Report report)
-	{
-		logger.info("Received request to add report to database");
-
-		try
-		{
-			sessionFactory.getCurrentSession().save(report);
-		} catch (HibernateException e)
-		{
-			logger.error("Unable to add report to database");
 		}
 	}
 
@@ -149,36 +137,42 @@ public class Dao
 	public boolean createReportTable(List<String> attributes, String mac)
 	{
 		StringBuilder queryString = new StringBuilder("CREATE TABLE " + TABLE_PREFIX + mac
-				+ " (");
+				+ " (id int NOT NULL AUTO_INCREMENT" + SQL_SEPARATOR + "timestamp datetime"
+				+ SQL_SEPARATOR);
 		for (String attribute : attributes)
 		{
 			queryString.append(attribute + " varchar(100)" + SQL_SEPARATOR);
 		}
-		queryString
-				.replace(queryString.lastIndexOf(SQL_SEPARATOR), queryString.length(), ");");
+		queryString.append("PRIMARY KEY (id));");
+		// queryString
+		// .replace(queryString.lastIndexOf(SQL_SEPARATOR),
+		// queryString.length(), ", PRIMARY KEY ('id'));");
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString.toString());
-		int insertNum = 0;
+		// int insertNum = 0;
 
 		try
 		{
-			insertNum = q.executeUpdate();
+			// insertNum =
+			q.executeUpdate();
+			return true;
 		} catch (Exception e)
 		{
 			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
 
-		if (insertNum == 1)
-		{
-			logger.info("Created report " + mac);
-			return true;
-		} else
-		{
-			logger.error("Unable to create report. Query execution returned with " + insertNum
-					+ " instead of 1.");
-			return false;
-		}
+		// if (insertNum == 1)
+		// {
+		// logger.info("Created report " + mac);
+		// return true;
+		// } else
+		// {
+		// logger.error("Unable to create report. Query execution returned with "
+		// + insertNum
+		// + " instead of 1.");
+		// return false;
+		// }
 
 	}
 
@@ -201,23 +195,19 @@ public class Dao
 
 		List<String> reportKeys = getReportAttributes(mac);
 		List<Object[]> table = (List<Object[]>) q.list();
-		int reportAttrNum = reportKeys.size();
 
-		for (int i = 0; i < reportAttrNum; i++)
+		for (int row = 0; row < table.size(); row++)
 		{
-			for (int row = 0; row < table.size(); row++)
+			Map<String, String> reportInstance = new HashMap<String, String>();
+			Object tableValues[] = table.get(row);
+			int tableValuesLength = tableValues.length;
+			for (int column = 0; column < tableValuesLength; column++)
 			{
-				Map<String, String> reportInstance = new HashMap<String, String>();
-				Object tableValues[] = table.get(row);
-				int tableValuesLength = tableValues.length;
-				for (int column = 0; column < tableValuesLength; column++)
-				{
-					String key = reportKeys.get(column);
-					String value = tableValues[column].toString();
-					reportInstance.put(key, value);
-				}
-				result.add(reportInstance);
+				String key = reportKeys.get(column);
+				String value = tableValues[column].toString();
+				reportInstance.put(key, value);
 			}
+			result.add(reportInstance);
 		}
 
 		return result;
@@ -225,10 +215,7 @@ public class Dao
 
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
-		// INSERT INTO table_name (column1,column2,column3,...)
-		// VALUES (value1,value2,value3,...);
-
-		StringBuilder keyString = new StringBuilder(" (");
+		StringBuilder keyString = new StringBuilder(" (timestamp" + SQL_SEPARATOR + " ");
 
 		for (Entry<String, String> entry : report.entrySet())
 		{
@@ -237,6 +224,16 @@ public class Dao
 		keyString.replace(keyString.lastIndexOf(SQL_SEPARATOR), keyString.length(), ")");
 
 		StringBuilder valuesString = new StringBuilder(" VALUES (");
+
+		try
+		{
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			String dateString = formatter.format(new Date());
+			valuesString.append("\"" + dateString + "\"" + SQL_SEPARATOR);
+		} catch (Exception e)
+		{
+			logger.error("cannot parse date", e);
+		}
 
 		// FIXME keys for sql?
 		for (Entry<String, String> entry : report.entrySet())
@@ -253,7 +250,7 @@ public class Dao
 		int updatedNum = q.executeUpdate();
 		if (updatedNum == 1)
 		{
-			logger.info("Saved report " + mac);
+			logger.info("Saved report into table " + TABLE_PREFIX + mac);
 			return true;
 		} else
 		{
@@ -265,7 +262,6 @@ public class Dao
 	@SuppressWarnings("unchecked")
 	public Map<String, String> getReport(String mac)
 	{
-
 		Map<String, String> result = new HashMap<String, String>();
 		List<String> attributes = getReportAttributes(mac);
 		List<String> values = sessionFactory.getCurrentSession()
@@ -323,7 +319,8 @@ public class Dao
 		{
 			logger.error("Unable to get table columns", e);
 			return null;
-		} finally {
+		} finally
+		{
 			try
 			{
 				conn.close();

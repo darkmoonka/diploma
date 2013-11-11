@@ -11,11 +11,28 @@
 	</Key>
 	<Agent>
 		<idFile>agentId.txt</idFile>
-		<repeatPeriod>200000</repeatPeriod>
+		<repeatPeriod>2000</repeatPeriod>
 		<Name>Almafa</Name>
 	</Agent>
-	<Contact>
-		<Name>Pista</Name>
-		<Email>ds@d.h</Email>
-	</Contact>
+	<Features>
+		<Os>true</Os>
+		<Cpu>true</Cpu>
+		<Storage>false</Storage>
+		<Memory>false</Memory>
+		<Process>true</Process>
+	</Features>
+	<Contacts>
+		<Contact>
+			<Name>Pista</Name>
+			<Email>szakaly.tibi@gmail.com</Email>
+		</Contact>
+		<Contact>
+			<Name>Mari</Name>
+			<Email>szakaly.tibi@gmail.com</Email>
+		</Contact>
+		<Contact>
+			<Name>Zsuzsi</Name>
+			<Email>szakaly.tibi@gmail.com</Email>
+		</Contact>
+	</Contacts>
 </Settings>
