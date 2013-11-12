@@ -82,7 +82,7 @@ public class DataController
 //		dao.insertReport(report, mac);
 //		dao.insertReport(report, mac);
 //		dao.listReports(-2, mac);
-		dao.listReports(1, mac);
+		dao.getAllReports(10);
 
 		return "index";
 	}
@@ -91,7 +91,7 @@ public class DataController
 	public @ResponseBody
 	String list()
 	{
-		List<Map<String, String>> reportList = dao.listReports(10, "alma");
+		List<List<Map<String, String>>> reportList = dao.getAllReports(10);
 		try
 		{
 			String result = objectMapper.writeValueAsString(reportList);

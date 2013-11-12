@@ -2,38 +2,43 @@ window.setInterval(refresh, 3000);
 
 function refresh()
 {
-	console.log("0");
-	jq.ajax(
-	{
-		url : "list",
-		type : "GET",
-		success : function(data)
-		{
-			document.body.innerHTML = "";
-			var table = jq.parseJSON(data);
-
-			console.log(data);
-			document.write("<table><tr>");
-
-			for ( var key in table[0])
+	jq
+			.ajax(
 			{
-				document.write("<th>" + key + "</th>");
-			}
-			
-			document.write("</tr>");
-
-			for ( var i = 0; i < table.length; i++)
-			{
-				document.write("<tr>");
-				for ( var key in table[i])
+				url : "list",
+				type : "GET",
+				success : function(data)
 				{
-					document.write("<td>" + table[i][key] + "</td>");
+					var table = jq.parseJSON(data);
+
+					var reportTable = jq(".reports");
+					reportTable.text("");
+
+					for ( var i in table)
+					{
+						reportTable.append("<table><tr>");
+						for ( var key in table[i][0])
+						{
+							reportTable.append("<th>" + key + "</th>");
+						}
+
+						reportTable.append("</tr>");
+
+						for ( var j = 0; j < table[i].length; j++)
+						{
+							reportTable.append("<tr>");
+							for ( var key in table[i][j])
+							{
+								reportTable.append("<td>" + table[i][j][key]
+										+ "</td>");
+							}
+							reportTable.append("</tr>");
+						}
+						reportTable.append("</tr></td></table>");
+						reportTable.append("</br>");
+					}
 				}
-				document.write("</tr>");
-			}
-			document.write("</tr></td></table>");
-		}
-	});
+			});
 }
 
 // var poiList = new Array();

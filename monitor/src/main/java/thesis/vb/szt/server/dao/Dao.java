@@ -8,9 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
@@ -179,6 +181,8 @@ public class Dao
 	@SuppressWarnings("unchecked")
 	public List<Map<String, String>> listReports(int count, String mac)
 	{
+		getAllReports(count);
+		
 		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 
 		String queryString = "SELECT * FROM " + TABLE_PREFIX + mac;
@@ -210,6 +214,50 @@ public class Dao
 			result.add(reportInstance);
 		}
 
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<List<Map<String, String>>> getAllReports(int count)
+	{
+		List<List<Map<String, String>>> result = new ArrayList<List<Map<String, String>>>();
+
+		Set<String> tableNames = getTableNames();
+
+		for (String tableName : tableNames)
+		{
+			List<Map<String, String>> tableData = new ArrayList<Map<String, String>>();
+			
+			String queryString = "SELECT * FROM " + tableName;
+			Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
+
+			if (count > 0)
+			{
+				logger.info("Listing last " + count + " reports from " + tableName);
+				q.setMaxResults(count);
+			} else
+			{
+				logger.info("Listing reports from " + tableName);
+			}
+
+			List<String> reportKeys = getReportAttributes(tableName);
+			List<Object[]> table = (List<Object[]>) q.list();
+
+			for (int row = 0; row < table.size(); row++)
+			{
+				Map<String, String> reportInstance = new HashMap<String, String>();
+				Object tableValues[] = table.get(row);
+				int tableValuesLength = tableValues.length;
+				for (int column = 0; column < tableValuesLength; column++)
+				{
+					String key = reportKeys.get(column);
+					String value = tableValues[column].toString();
+					reportInstance.put(key, value);
+				}
+				tableData.add(reportInstance);
+			}
+			result.add(tableData);
+		}
 		return result;
 	}
 
@@ -283,7 +331,42 @@ public class Dao
 		return result;
 	}
 
-	private List<String> getReportAttributes(String mac)
+	private Set<String> getTableNames()
+	{
+		Set<String> tableNames = new HashSet<String>();
+		DatabaseMetaData databaseMetaData;
+		Connection conn = null;
+		try
+		{
+			conn = dataSource.getConnection();
+			databaseMetaData = conn.getMetaData();
+
+			ResultSet columns = databaseMetaData.getTables("monitor", "monitor", null, null);
+			while (columns.next())
+			{
+				String tableName = columns.getString(3);
+				if (tableName.contains(TABLE_PREFIX))
+					tableNames.add(tableName);
+			}
+		} catch (Exception e)
+		{
+			logger.error("Unable to get table columns", e);
+			return null;
+		} finally
+		{
+			try
+			{
+				conn.close();
+			} catch (Exception e)
+			{
+				logger.error("Unable to close database connection", e);
+			}
+		}
+
+		return tableNames;
+	}
+
+	private List<String> getReportAttributes(String tableName)
 	{
 		List<String> result = new ArrayList<String>();
 		DatabaseMetaData databaseMetaData;
@@ -293,8 +376,8 @@ public class Dao
 			conn = dataSource.getConnection();
 			databaseMetaData = conn.getMetaData();
 
-			ResultSet columns = databaseMetaData.getColumns("monitor", "monitor", "Report_"
-					+ mac, null);
+			ResultSet columns = databaseMetaData.getColumns("monitor", "monitor", tableName,
+					null);
 			while (columns.next())
 			{
 				try
