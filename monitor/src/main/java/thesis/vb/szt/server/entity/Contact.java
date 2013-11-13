@@ -1,25 +1,41 @@
 package thesis.vb.szt.server.entity;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Set;
 
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlRootElement(name = "contact")
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Contact")
 public class Contact
 {
-	private String name;
-	private String eMail;
+	@Id
+	@Column(name = "contact_id")
+	@GeneratedValue
+	private int id;
 
-	public Contact()
+	@Column(name = "name")
+	private String name;
+
+	@Column(name = "email", unique = true)
+	private String email;
+
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "contacts")
+	private Set<Agent> agents;
+
+	public int getId()
 	{
+		return id;
 	}
 
-	public Contact(String name, String eMail)
+	public void setId(int id)
 	{
-		super();
-		this.name = name;
-		this.eMail = eMail;
+		this.id = id;
 	}
 
 	public String getName()
@@ -32,13 +48,23 @@ public class Contact
 		this.name = name;
 	}
 
-	public String geteMail()
+	public String getEmail()
 	{
-		return eMail;
+		return email;
 	}
 
-	public void seteMail(String eMail)
+	public void setEmail(String email)
 	{
-		this.eMail = eMail;
+		this.email = email;
+	}
+
+	public Set<Agent> getAgents()
+	{
+		return agents;
+	}
+
+	public void setAgents(Set<Agent> agents)
+	{
+		this.agents = agents;
 	}
 }

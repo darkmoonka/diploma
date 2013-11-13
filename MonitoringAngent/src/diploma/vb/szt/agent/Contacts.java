@@ -1,6 +1,6 @@
 package diploma.vb.szt.agent;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -12,24 +12,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Contacts
 {
 	@XmlElement(name = "contact", type = Contact.class)
-	private List<Contact> contacts;
+	private Set<Contact> contacts;
 
 	public Contacts()
 	{
 	}
 
-	public Contacts(List<Contact> contacts)
+	public Contacts(Set<Contact> contacts)
 	{
 		super();
 		this.contacts = contacts;
 	}
 
-	public List<Contact> getContacts()
+	public Set<Contact> getContacts()
 	{
 		return contacts;
 	}
 
-	public void setContacts(List<Contact> contacts)
+	public void setContacts(Set<Contact> contacts)
 	{
 		this.contacts = contacts;
 	}

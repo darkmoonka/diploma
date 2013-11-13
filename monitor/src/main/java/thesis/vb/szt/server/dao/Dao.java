@@ -25,6 +25,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import thesis.vb.szt.server.entity.Agent;
+import thesis.vb.szt.server.entity.Contact;
 
 @Transactional
 @Repository
@@ -36,6 +37,9 @@ public class Dao
 
 	@Autowired
 	private SessionFactory sessionFactory;
+
+	@Autowired
+	BasicDataSource dataSource;
 
 	public SessionFactory getSessionFactory()
 	{
@@ -63,6 +67,30 @@ public class Dao
 		}
 	}
 
+	public Contact getContactById(int id)
+	{
+		try
+		{
+			return (Contact) sessionFactory.getCurrentSession().get(Contact.class, id);
+		} catch (Exception e)
+		{
+			logger.error("Contact not found in DB with id: " + id, e);
+			return null;
+		}
+	}
+
+	public Agent getAgentById(int agentId)
+	{
+		try
+		{
+			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, agentId);
+		} catch (Exception e)
+		{
+			logger.error("Unable to get agent with agentId: " + agentId, e);
+			return null;
+		}
+	}
+
 	public Integer saveAgent(Agent agent)
 	{
 		logger.info("Received request to add agent to database with address: "
@@ -79,62 +107,19 @@ public class Dao
 		}
 	}
 
-	@Autowired
-	BasicDataSource dataSource;
+	public Integer saveContact(Contact contact)
+	{
+		logger.info("Received request to add contact to database");
 
-	// @SuppressWarnings("unchecked")
-	// public List<Report> getAllReports()
-	// {
-	// DatabaseMetaData databaseMetaData;
-	// try
-	// {
-	// Connection c = dataSource.getConnection();
-	// databaseMetaData = c.getMetaData();
-	// // ResultSet catalogs = databaseMetaData.getCatalogs();
-	//
-	// ResultSet columns = databaseMetaData.getColumns("monitor", "monitor",
-	// "Agent",
-	// null);// getTables("monitor", "monitor", "agent", null);
-	// int i = 0;
-	// while (columns.next())
-	// {
-	// try
-	// {
-	// i++;
-	// logger.info(columns.getString(4)); //TODO column name
-	// // Ref ref = columns.getRef(3);
-	// // ref.toString();
-	// } catch (Exception e)
-	// {
-	// logger.info("", e);
-	// }
-	// }
-	//
-	// // ResultSetMetaData columnsMetaData = columns.getMetaData();
-	// // int columnCount = columnsMetaData.getColumnCount();
-	// // for(int i = 1; i < columnCount; i++) {
-	// // String columnName =
-	// // columnsMetaData.getTableName(i);//ColumnLabel(i);
-	// // logger.info(columnName);
-	// // }
-	//
-	// // while(catalogs.next()) {
-	// // catalogs.getm
-	// // }
-	//
-	// logger.info("");
-	// // Type[] types =
-	// //
-	// sessionFactory.getCurrentSession().createSQLQuery("Select * from Report");
-	// } catch (Exception e)
-	// {
-	// String a = "";
-	// e.printStackTrace();
-	// }
-	//
-	// return
-	// sessionFactory.getCurrentSession().createQuery("from Report").list();
-	// }
+		try
+		{
+			return (Integer) sessionFactory.getCurrentSession().save(contact);
+		} catch (HibernateException e)
+		{
+			logger.error("Unable to add contact to database");
+			return null;
+		}
+	}
 
 	public boolean createReportTable(List<String> attributes, String mac)
 	{
@@ -146,16 +131,11 @@ public class Dao
 			queryString.append(attribute + " varchar(100)" + SQL_SEPARATOR);
 		}
 		queryString.append("PRIMARY KEY (id));");
-		// queryString
-		// .replace(queryString.lastIndexOf(SQL_SEPARATOR),
-		// queryString.length(), ", PRIMARY KEY ('id'));");
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString.toString());
-		// int insertNum = 0;
 
 		try
 		{
-			// insertNum =
 			q.executeUpdate();
 			return true;
 		} catch (Exception e)
@@ -163,58 +143,6 @@ public class Dao
 			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
-
-		// if (insertNum == 1)
-		// {
-		// logger.info("Created report " + mac);
-		// return true;
-		// } else
-		// {
-		// logger.error("Unable to create report. Query execution returned with "
-		// + insertNum
-		// + " instead of 1.");
-		// return false;
-		// }
-
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> listReports(int count, String mac)
-	{
-		getAllReports(count);
-		
-		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
-
-		String queryString = "SELECT * FROM " + TABLE_PREFIX + mac;
-		Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
-
-		if (count > 0)
-		{
-			logger.info("Listing last " + count + " reports from " + TABLE_PREFIX + mac);
-			q.setMaxResults(count);
-		} else
-		{
-			logger.info("Listing reports from " + TABLE_PREFIX + mac);
-		}
-
-		List<String> reportKeys = getReportAttributes(mac);
-		List<Object[]> table = (List<Object[]>) q.list();
-
-		for (int row = 0; row < table.size(); row++)
-		{
-			Map<String, String> reportInstance = new HashMap<String, String>();
-			Object tableValues[] = table.get(row);
-			int tableValuesLength = tableValues.length;
-			for (int column = 0; column < tableValuesLength; column++)
-			{
-				String key = reportKeys.get(column);
-				String value = tableValues[column].toString();
-				reportInstance.put(key, value);
-			}
-			result.add(reportInstance);
-		}
-
-		return result;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -227,7 +155,7 @@ public class Dao
 		for (String tableName : tableNames)
 		{
 			List<Map<String, String>> tableData = new ArrayList<Map<String, String>>();
-			
+
 			String queryString = "SELECT * FROM " + tableName;
 			Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
 
@@ -305,30 +233,6 @@ public class Dao
 			logger.error("Inserted " + updatedNum + " reports instead of 1.");
 			return false;
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public Map<String, String> getReport(String mac)
-	{
-		Map<String, String> result = new HashMap<String, String>();
-		List<String> attributes = getReportAttributes(mac);
-		List<String> values = sessionFactory.getCurrentSession()
-				.createQuery("from Report-" + mac).list();
-
-		if (attributes.size() != values.size())
-		{
-			logger.error("Unable to get report. Attribute and value cound isn't equal.");
-			logger.error("Number of attributes:" + attributes.size());
-			logger.error("Number of values:" + values.size());
-			return null;
-		}
-
-		for (int i = 0; i < attributes.size(); i++)
-		{
-			result.put(attributes.get(i), values.get(i));
-		}
-
-		return result;
 	}
 
 	private Set<String> getTableNames()
@@ -413,116 +317,4 @@ public class Dao
 			}
 		}
 	}
-
-	public Agent getAgentById(int agentId)
-	{
-		try
-		{
-			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, agentId);
-		} catch (Exception e)
-		{
-			logger.error("Unable to get agent with agentId: " + agentId, e);
-			return null;
-		}
-	}
-	//
-	//
-	// public List<Vehicle> getVehicles(Criteria criteria)
-	// {
-	// logger.debug("Received request to search for a vehicles with criteria: "
-	// + criteria.toString());
-	//
-	// //Query query =
-	// sessionFactory.getCurrentSession().getNamedQuery("critieria.search");
-	// String queryString =
-	// "SELECT * FROM vehicle WHERE price BETWEEN :price_min AND :price_max AND "
-	// + "year BETWEEN :year_min AND :year_max";
-	//
-	// Query query =
-	// sessionFactory.getCurrentSession().createSQLQuery(queryString,"",Vehicle.class);
-	// query.setParameter("price_min", criteria.getPrice_min());
-	// query.setParameter("price_max", criteria.getPrice_max());
-	//
-	// query.setParameter("year_min", criteria.getYear_min());
-	// query.setParameter("year_max", criteria.getYear_max());
-	//
-	// List<Vehicle> result = (List<Vehicle>) query.list();
-	// //Vehicle c = (Vehicle) result.get(0);
-	// return result;
-	// }
-
-	// public Poi getPoi(Integer id) {
-	// logger.info("Received request to retrieve a poi from the database");
-	//
-	// Poi poi = null;
-	// try {
-	// poi = (Poi) sessionFactory.getCurrentSession().get(Poi.class, id);
-	// } catch (HibernateException e) {
-	// logger.error("Unable to load poi from database", e);
-	// }
-	// return poi;
-	// }
-	//
-	// public boolean addPoi(Poi poi) {
-	// logger.info("Received request to add poi to database.");
-	//
-	// try {
-	// sessionFactory.getCurrentSession().save(poi);
-	// return true;
-	// } catch (HibernateException e) {
-	// logger.error("Unable to add poi to database.", e);
-	// return false;
-	// }
-	// }
-	//
-	// public boolean updatePoi(Poi poi) {
-	// logger.info("Received request to update poi in database.");
-	//
-	// try {
-	// sessionFactory.getCurrentSession().update(poi);
-	// return true;
-	// } catch (HibernateException e) {
-	// logger.error("Unable to add poi to database.", e);
-	// return false;
-	// }
-	// }
-	//
-	// @SuppressWarnings("unchecked") // the result list of the query may
-	// contain any kind of object, not only Pois
-	// public List<Poi> search(Poi criteria) {
-	// logger.debug("Received request to search for a poi in the database");
-	//
-	// Query query =
-	// sessionFactory.getCurrentSession().getNamedQuery("poi.search");
-	// query.setParameter("name", "%" + criteria.getName() + "%");
-	// query.setParameter("type", "%" + criteria.getType() + "%");
-	// query.setParameter("address", "%" + criteria.getAddress() + "%");
-	//
-	// return query.list();
-	// }
-	//
-	// public User getUser(String username) throws NotFoundException{
-	// logger.info("Received request to retrieve a user from the database.");
-	//
-	// User user = null;
-	// try {
-	// user = (User) sessionFactory.getCurrentSession().get(User.class,
-	// username);
-	// if(user == null)
-	// throw new NotFoundException("No such user.");
-	// } catch (HibernateException e) {
-	// logger.error("Unable to load user from database.", e);
-	// }
-	// return user;
-	// }
-	//
-	// public void addUser(User user) {
-	// logger.info("Received request to add user to database.");
-	//
-	// try {
-	// sessionFactory.getCurrentSession().save(user);
-	// } catch (HibernateException e) {
-	// logger.error("Unable to add user to database.", e);
-	// }
-	// }
 }

@@ -6,8 +6,10 @@ import java.lang.reflect.Modifier;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.crypto.SecretKey;
 
@@ -96,7 +98,7 @@ public class Main
 			List<Object> contactEmails = configer
 					.getList("Contacts.Contact.Email");
 
-			List<Contact> contacts = new ArrayList<Contact>();
+			Set<Contact> contacts = new HashSet<Contact>();
 			if (contactNames != null && !contactNames.isEmpty()
 					&& contactEmails != null && !contactEmails.isEmpty())
 			{

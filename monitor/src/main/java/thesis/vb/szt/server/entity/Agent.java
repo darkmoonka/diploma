@@ -1,9 +1,16 @@
 package thesis.vb.szt.server.entity;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -11,7 +18,7 @@ import javax.persistence.Table;
 public class Agent
 {
 	@Id
-	@Column(name = "id")
+	@Column(name = "agent_id")
 	@GeneratedValue
 	private int id;
 
@@ -24,11 +31,9 @@ public class Agent
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "contactName")
-	private String contactName;
-
-	@Column(name = "contactEmail")
-	private String contactEmail;
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "agent_contact", joinColumns = { @JoinColumn(name = "agent_id", nullable = false) }, inverseJoinColumns = { @JoinColumn(name = "contact_id", nullable = false) })
+	public Set<Contact> contacts;
 
 	public byte[] getPublicKey()
 	{
@@ -70,23 +75,13 @@ public class Agent
 		this.name = name;
 	}
 
-	public String getContactName()
+	public Set<Contact> getContats()
 	{
-		return contactName;
+		return contacts;
 	}
 
-	public void setContactName(String contactName)
+	public void setContats(Set<Contact> contacts)
 	{
-		this.contactName = contactName;
-	}
-
-	public String getContactEmail()
-	{
-		return contactEmail;
-	}
-
-	public void setContactEmail(String contactEmail)
-	{
-		this.contactEmail = contactEmail;
+		this.contacts = contacts;
 	}
 }

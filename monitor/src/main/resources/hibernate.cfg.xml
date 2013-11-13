@@ -7,6 +7,6 @@
 	<session-factory>
 		<property name="hibernate.hbm2ddl.auto">update</property>
 		<mapping class="thesis.vb.szt.server.entity.Agent" />
-		<mapping class="thesis.vb.szt.server.entity.Report" />
+		<mapping class="thesis.vb.szt.server.entity.Contact" />
 	</session-factory>
 </hibernate-configuration>

@@ -13,8 +13,10 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +45,7 @@ import org.xml.sax.InputSource;
 
 import thesis.vb.szt.server.dao.Dao;
 import thesis.vb.szt.server.entity.Agent;
+import thesis.vb.szt.server.entity.Contact;
 import thesis.vb.szt.server.security.Keys;
 import thesis.vb.szt.server.util.CommunicationData;
 import thesis.vb.szt.server.util.Contacts;
@@ -66,26 +69,40 @@ public class DataController
 	private Mail mail;
 
 	protected static Logger logger = Logger.getLogger("DataController");
+	
+	@RequestMapping(value = "/test", method = RequestMethod.GET)
+	public void test()
+	{
+		Agent agent = dao.getAgentById(1);
+		
+		Contact c = new Contact();
+		c.setEmail("asd");
+		Set<Contact> set = new HashSet<Contact>();
+		set.add(c);
+		agent.setContats(set);
+		
+		dao.saveAgent(agent);
+	}
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String getHomePage()
 	{
-		String mac = "alma";
-//		List<String> attributes = new ArrayList<String>();
-//		attributes.add(new String("attribute1"));
-//		attributes.add(new String("attribute2"));
-//		dao.createReportTable(attributes, mac);
+		// List<String> attributes = new ArrayList<String>();
+		// attributes.add(new String("attribute1"));
+		// attributes.add(new String("attribute2"));
+		// dao.createReportTable(attributes, mac);
 
-//		Map<String, String> report = new HashMap<String, String>();
-//		report.put("attribute1", "attributeValue1");
-//		report.put("attribute2", "attributeValue2");
-//		dao.insertReport(report, mac);
-//		dao.insertReport(report, mac);
-//		dao.listReports(-2, mac);
+		// Map<String, String> report = new HashMap<String, String>();
+		// report.put("attribute1", "attributeValue1");
+		// report.put("attribute2", "attributeValue2");
+		// dao.insertReport(report, mac);
+		// dao.insertReport(report, mac);
+		// dao.listReports(-2, mac);
 		dao.getAllReports(10);
 
 		return "index";
 	}
+
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public @ResponseBody
@@ -255,6 +272,18 @@ public class DataController
 				agent.setAddress(macAddress);
 				agent.setPublicKey(agentPublicKey);
 				agent.setName(agentName);
+				
+				Set<Contact> agentContacts = new HashSet<Contact>();
+				
+				for(thesis.vb.szt.server.util.Contact item : cc.getContacts())
+				{
+					Contact contact = new Contact();
+					contact.setEmail(item.getEmail());
+					contact.setName(item.getName());
+					agentContacts.add(contact);
+				}
+				
+				agent.setContats(agentContacts);
 				agent.setId(dao.saveAgent(agent));
 			}
 

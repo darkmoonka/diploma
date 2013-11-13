@@ -1,4 +1,4 @@
-package diploma.vb.szt.agent;
+package thesis.vb.szt.server.util;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
