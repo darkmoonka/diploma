@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Contact;
+import thesis.vb.szt.server.util.Notifier;
 
 @Transactional
 @Repository
@@ -62,7 +63,9 @@ public class Dao
 			return agent;
 		} catch (Exception e)
 		{
-			logger.error("Agent not found in DB with address: " + macAddress, e);
+			Notifier.error(logger, "Agent not found in DB with address: " + macAddress, e);
+			// logger.error("Agent not found in DB with address: " + macAddress,
+			// e);
 			return null;
 		}
 	}
@@ -74,7 +77,8 @@ public class Dao
 			return (Contact) sessionFactory.getCurrentSession().get(Contact.class, id);
 		} catch (Exception e)
 		{
-			logger.error("Contact not found in DB with id: " + id, e);
+			Notifier.error(logger, "Contact not found in DB with id: " + id, e);
+			// logger.error("Contact not found in DB with id: " + id, e);
 			return null;
 		}
 	}
@@ -86,7 +90,8 @@ public class Dao
 			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, agentId);
 		} catch (Exception e)
 		{
-			logger.error("Unable to get agent with agentId: " + agentId, e);
+			Notifier.error(logger, "Unable to get agent with agentId: " + agentId, e);
+			// logger.error("Unable to get agent with agentId: " + agentId, e);
 			return null;
 		}
 	}
@@ -101,8 +106,11 @@ public class Dao
 			return (Integer) sessionFactory.getCurrentSession().save(agent);
 		} catch (HibernateException e)
 		{
-			logger.error(
+			Notifier.error(logger,
 					"Unable to add agent to database with address: " + agent.getAddress(), e);
+			// logger.error(
+			// "Unable to add agent to database with address: " +
+			// agent.getAddress(), e);
 			return null;
 		}
 	}
@@ -116,7 +124,8 @@ public class Dao
 			return (Integer) sessionFactory.getCurrentSession().save(contact);
 		} catch (HibernateException e)
 		{
-			logger.error("Unable to add contact to database");
+			Notifier.error(logger, "Unable to add contact to database", e);
+			// logger.error("Unable to add contact to database");
 			return null;
 		}
 	}
@@ -140,7 +149,8 @@ public class Dao
 			return true;
 		} catch (Exception e)
 		{
-			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
+			Notifier.error(logger, "Cannot create table " + TABLE_PREFIX + mac, e);
+			// logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
 	}
@@ -203,12 +213,15 @@ public class Dao
 
 		try
 		{
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+//			Date now = new Date();
+//			java.sql.Timestamp sqlDate = new java.sql.Timestamp(now.getTime());
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
 			String dateString = formatter.format(new Date());
 			valuesString.append("\"" + dateString + "\"" + SQL_SEPARATOR);
 		} catch (Exception e)
 		{
-			logger.error("cannot parse date", e);
+			Notifier.error(logger, "Cannot parse date", e);
+			// logger.error("cannot parse date", e);
 		}
 
 		// FIXME keys for sql?
@@ -230,7 +243,9 @@ public class Dao
 			return true;
 		} else
 		{
-			logger.error("Inserted " + updatedNum + " reports instead of 1.");
+			Notifier.error(logger, "Inserted " + updatedNum + " reports instead of 1.", null);
+			// logger.error("Inserted " + updatedNum +
+			// " reports instead of 1.");
 			return false;
 		}
 	}
@@ -254,7 +269,8 @@ public class Dao
 			}
 		} catch (Exception e)
 		{
-			logger.error("Unable to get table columns", e);
+			Notifier.error(logger, "Unable to get table columns", e);
+			// logger.error("Unable to get table columns", e);
 			return null;
 		} finally
 		{
@@ -263,7 +279,8 @@ public class Dao
 				conn.close();
 			} catch (Exception e)
 			{
-				logger.error("Unable to close database connection", e);
+				Notifier.error(logger, "Unable to close database connection", e);
+				// logger.error("Unable to close database connection", e);
 			}
 		}
 
@@ -304,7 +321,8 @@ public class Dao
 			return result;
 		} catch (Exception e)
 		{
-			logger.error("Unable to get table columns", e);
+			Notifier.error(logger, "Unable to get table columns", e);
+			// logger.error("Unable to get table columns", e);
 			return null;
 		} finally
 		{
@@ -313,7 +331,8 @@ public class Dao
 				conn.close();
 			} catch (Exception e)
 			{
-				logger.error("Unable to close database connection", e);
+				Notifier.error(logger, "Unable to close database connection", e);
+				// logger.error("Unable to close database connection", e);
 			}
 		}
 	}

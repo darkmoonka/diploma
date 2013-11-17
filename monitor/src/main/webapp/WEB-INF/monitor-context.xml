@@ -49,6 +49,9 @@
 		<property name="mailSender" ref="mailSender" />
 	</bean>
 
+	<bean id="notifier" class="thesis.vb.szt.server.util.Notifier">
+		<property name="mail" ref="mail"></property>
+	</bean>
 
 	<!-- ****************************JAXB************************************* -->
 

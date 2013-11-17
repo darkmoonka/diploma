@@ -49,7 +49,7 @@ import thesis.vb.szt.server.entity.Contact;
 import thesis.vb.szt.server.security.Keys;
 import thesis.vb.szt.server.util.CommunicationData;
 import thesis.vb.szt.server.util.Contacts;
-import thesis.vb.szt.server.util.Mail;
+import thesis.vb.szt.server.util.Notifier;
 
 @Controller
 public class DataController
@@ -65,9 +65,6 @@ public class DataController
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@Autowired
-	private Mail mail;
-
 	protected static Logger logger = Logger.getLogger("DataController");
 	
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
@@ -82,6 +79,16 @@ public class DataController
 		agent.setContats(set);
 		
 		dao.saveAgent(agent);
+	}
+	
+	@RequestMapping(value = "/demo", method = RequestMethod.GET)
+	public void demo()
+	{
+//		Agent agent = dao.getAgentByAddress("100");
+//		Agent agent = new Agent();
+//		agent.setId(1);
+//		dao.saveAgent(agent);
+		Notifier.error(logger, "test", new Throwable("testerror"));
 	}
 
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
@@ -108,7 +115,7 @@ public class DataController
 	public @ResponseBody
 	String list()
 	{
-		List<List<Map<String, String>>> reportList = dao.getAllReports(10);
+		List<List<Map<String, String>>> reportList = dao.getAllReports(100);
 		try
 		{
 			String result = objectMapper.writeValueAsString(reportList);
@@ -355,4 +362,5 @@ public class DataController
 	// return "index";
 	// }
 
+	
 }

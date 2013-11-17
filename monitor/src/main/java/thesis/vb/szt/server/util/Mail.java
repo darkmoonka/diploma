@@ -14,14 +14,13 @@ public class Mail
 		this.mailSender = mailSender;
 	}
 
-	// TODO use this to send error reports
-	public void sendMail(String to)
+	public void sendMail(String to, String name, String subject, String body)
 	{
 		SimpleMailMessage message = new SimpleMailMessage();
 
 		message.setTo(to);
-		message.setSubject("testSubject");
-		message.setText("testMsg");
+		message.setSubject(subject);
+		message.setText(body);
 		mailSender.send(message);
 	}
 }

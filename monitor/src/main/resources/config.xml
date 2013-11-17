@@ -4,4 +4,10 @@
 		<Length>2048</Length>
 		<Path>Keys</Path>
 	</Key>
+	<Admins>
+		<Admin>
+			<Name>Szakály Tibor</Name>
+			<Email>szakaly.tibi@gmail.com</Email>
+		</Admin>
+	</Admins>
 </Settings>
