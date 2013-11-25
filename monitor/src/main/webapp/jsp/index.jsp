@@ -11,6 +11,9 @@
 	<h1>Reports</h1>
 <body>
 
+	<div id="chartdiv" style="width: 1200px; height: 362px;"></div>
+
+
 	<div class="reports">
 
 		<c:if test="${!empty reportList}">
@@ -51,10 +54,14 @@
 			</table>
 		</c:if>
 	</div>
+
 </body>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script type="text/javascript" src="resources/JSController.js"></script>
+<script src="resources/amcharts.js" type="text/javascript"></script>
+<script src="resources/serial.js" type="text/javascript"></script>
+<script src="resources/Charts.js" type="text/javascript"></script>
+<script src="resources/JSController.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var jq = jQuery.noConflict();
 </script>
