@@ -49,19 +49,15 @@ function refresh()
 						// chart
 						if (!isLoaded)
 						{
-							for ( var j = 0; j < table[1].length; j++)
+							for ( var j = 0; j < table[0].length; j++)
 							{
-								var temp =
-								{};
-								for ( var key in table[1][j])
+								var temp = {};
+								for ( var key in table[0][j])
 								{
-									// reportTable.append("<td>" +
-									// table[1][j][key]
-									// + "</td>");
 									if (j == 0)
 										attributes.push(key);
 
-									temp[key] = table[1][j][key];
+									temp[key] = table[0][j][key];
 
 								}
 								chartData.push(temp);
@@ -130,7 +126,7 @@ function drawChart()
 			// csak az int típusúakat jeleníti meg
 			var item = attributes[i];
 			var testData = chartData[i][item];
-			if (testData % 1 === 0 && item != "id")
+			if (testData % 1 === 0 && item != "id" && testData != 0)
 			{
 				var color = getRandomColor();
 
