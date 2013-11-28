@@ -17,9 +17,10 @@
 	<Features>
 		<Os>true</Os>
 		<Cpu>true</Cpu>
-		<Storage>false</Storage>
-		<Memory>false</Memory>
+		<Storage>true</Storage>
+		<Memory>true</Memory>
 		<Process>true</Process>
+		<Network>true</Network>
 	</Features>
 	<Contacts>
 		<Contact>

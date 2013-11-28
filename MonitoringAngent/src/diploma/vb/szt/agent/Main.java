@@ -83,6 +83,14 @@ public class Main
 					if (!((f.getModifiers() & Modifier.FINAL) == Modifier.FINAL))
 						monitoredFeatures.add(f.getName());
 			}
+			boolean isEnabledNetwork = configer.getBoolean("Features.Network");
+			if (isEnabledNetwork)
+			{
+				Field[] fields = Network.class.getDeclaredFields();
+				for (Field f : fields)
+					if (!((f.getModifiers() & Modifier.FINAL) == Modifier.FINAL))
+						monitoredFeatures.add(f.getName());
+			}
 
 			KeyPair keyPair = Keys.getKeyPair();
 
@@ -161,6 +169,12 @@ public class Main
 					Process process = new Process(sigar);
 					items.add(process);
 
+				}
+				isEnabled = configer.getBoolean("Features.Network");
+				if(isEnabled)
+				{
+					Network network = new Network(sigar);
+					items.add(network);
 				}
 
 				String xmlData = "<?xml version=\"1.0\"?>" + "<" + ITEM + ">";
