@@ -50,7 +50,7 @@
 	</bean>
 
 	<bean id="notifier" class="thesis.vb.szt.server.util.Notifier">
-		<property name="mail" ref="mail"></property>
+<!-- 		<property name="mail" ref="mail"></property> -->
 	</bean>
 
 	<!-- ****************************JAXB************************************* -->

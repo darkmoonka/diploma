@@ -6,14 +6,14 @@ var attributes = [];
 
 function refresh()
 {
-	jq
-			.ajax(
+	console.log("1");
+	jq.ajax(
 			{
 				url : "list",
 				type : "GET",
 				success : function(data)
 				{
-
+					console.log(data);
 					table = jq.parseJSON(data);
 
 					var reportTable = jq(".reports");

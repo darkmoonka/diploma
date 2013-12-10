@@ -34,7 +34,7 @@ public class Dao
 {
 	protected static Logger logger = Logger.getLogger("Dao");
 	private final String SQL_SEPARATOR = ", ";
-	private final String TABLE_PREFIX = "Report_";
+	private final String TABLE_PREFIX = "report_";
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -199,6 +199,40 @@ public class Dao
 		return result;
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	public List<Map<String, String>> getAgent(String mac)
+	{
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+
+		Set<String> tableNames = getTableNames();
+		
+		String tableName = TABLE_PREFIX + mac;
+		String query = "SELECT * FROM " + tableName;
+		
+		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
+
+		List<String> reportKeys = getReportAttributes(tableName);
+		List<Object[]> table = (List<Object[]>) q.list();
+
+		for (int row = 0; row < table.size(); row++)
+		{
+			Map<String, String> reportInstance = new HashMap<String, String>();
+			Object tableValues[] = table.get(row);
+			int tableValuesLength = tableValues.length;
+			for (int column = 0; column < tableValuesLength; column++)
+			{
+				String key = reportKeys.get(column);
+				String value = tableValues[column].toString();
+				reportInstance.put(key, value);
+			}
+			result.add(reportInstance);
+		}
+	
+		return result;
+	}
+
+	
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
 		StringBuilder keyString = new StringBuilder(" (timestamp" + SQL_SEPARATOR + " ");
@@ -213,8 +247,9 @@ public class Dao
 
 		try
 		{
-//			Date now = new Date();
-//			java.sql.Timestamp sqlDate = new java.sql.Timestamp(now.getTime());
+			// Date now = new Date();
+			// java.sql.Timestamp sqlDate = new
+			// java.sql.Timestamp(now.getTime());
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
 			String dateString = formatter.format(new Date());
 			valuesString.append("\"" + dateString + "\"" + SQL_SEPARATOR);
@@ -285,6 +320,15 @@ public class Dao
 		}
 
 		return tableNames;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, String>> getAgentNamesAndMacs()
+	{
+		String query = "SELECT name, address FROM Agent";
+		List<Map<String, String>> result = sessionFactory.getCurrentSession().createQuery(query).list();
+
+		return result;
 	}
 
 	private List<String> getReportAttributes(String tableName)

@@ -14,7 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Agent")
+@Table(name = "agent")
 public class Agent
 {
 	@Id
@@ -28,7 +28,7 @@ public class Agent
 	@Column(name = "publicKey", length = 2048)
 	private byte[] publicKey;
 
-	@Column(name = "name")
+	@Column(name = "name", unique = true)
 	private String name;
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

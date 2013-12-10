@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,15 +55,15 @@ import thesis.vb.szt.server.util.Notifier;
 @Controller
 public class DataController
 {
-	@Autowired
+	@Autowired(required=true)
 	private Dao dao;
 
-	@Autowired
+	@Autowired(required=true)
 	private Marshaller marshaller;
-	@Autowired
+	@Autowired(required=true)
 	private Unmarshaller unMarshaller;
 
-	@Autowired
+	@Autowired(required=true)
 	private ObjectMapper objectMapper;
 
 	protected static Logger logger = Logger.getLogger("DataController");
@@ -107,7 +108,7 @@ public class DataController
 		// dao.listReports(-2, mac);
 		dao.getAllReports(10);
 
-		return "index";
+		return "home";
 	}
 
 
@@ -126,6 +127,52 @@ public class DataController
 		}
 		return null;
 	}
+	
+	@RequestMapping(value = "/agent/{mac}", method = RequestMethod.GET)
+	public @ResponseBody
+	String getAgent(@PathVariable String mac)
+	{
+		List<Map<String, String>> reportList = dao.getAgent(mac);
+		try
+		{
+			String result = objectMapper.writeValueAsString(reportList);
+			return result;
+		} catch (IOException e)
+		{
+			logger.error("Unable to marshal reports", e);
+		}
+		return null;
+	}
+	
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String index()
+	{
+		return "index";
+	}
+	
+	@RequestMapping(value = "/agent", method = RequestMethod.GET)
+	public String agent()
+	{
+		return "agent";
+	}
+	
+	@RequestMapping(value = "/init", method = RequestMethod.GET)
+	public @ResponseBody
+	String init()
+	{
+		List<Map<String, String>> agentNames = dao.getAgentNamesAndMacs();
+		String result = null;
+		try
+		{
+			result = objectMapper.writeValueAsString(agentNames);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
 
 	@RequestMapping(value = "/postData", method = RequestMethod.POST)
 	public @ResponseBody
