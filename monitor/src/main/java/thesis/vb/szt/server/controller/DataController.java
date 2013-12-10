@@ -26,12 +26,16 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -95,6 +99,7 @@ public class DataController
 	@RequestMapping(value = "/home", method = RequestMethod.GET)
 	public String getHomePage()
 	{
+		logger.info("Loading home page");
 		// List<String> attributes = new ArrayList<String>();
 		// attributes.add(new String("attribute1"));
 		// attributes.add(new String("attribute2"));
@@ -108,11 +113,51 @@ public class DataController
 		// dao.listReports(-2, mac);
 		dao.getAllReports(10);
 
+		logger.info("Loaded home page");
 		return "home";
 	}
+	
+	@RequestMapping(value = "/reports/{address}", method = RequestMethod.GET)
+	public String getReportPage(@PathVariable String address, ModelMap model)
+	{
+		logger.info("Loading reports page");
+		// List<String> attributes = new ArrayList<String>();
+		// attributes.add(new String("attribute1"));
+		// attributes.add(new String("attribute2"));
+		// dao.createReportTable(attributes, mac);
+
+		// Map<String, String> report = new HashMap<String, String>();
+		// report.put("attribute1", "attributeValue1");
+		// report.put("attribute2", "attributeValue2");
+		// dao.insertReport(report, mac);
+		// dao.insertReport(report, mac);
+		// dao.listReports(-2, mac);
+//		dao.getAllReports(10);
+		model.addAttribute("address", address);
+		logger.info("Loaded reports page");
+		return "reports";
+	}
+	
+	@RequestMapping(value = "/reports/{address}", method = RequestMethod.POST)
+	public @ResponseBody String getReports(@PathVariable String address, HttpServletResponse response)
+	{
+		logger.info("Loading reports page");
+		List<List<Map<String, String>>> reportList = dao.getReports(address);
+		try
+		{
+			String result = objectMapper.writeValueAsString(reportList);
+			return result;
+		} catch (IOException e)
+		{
+			logger.error("Unable to marshal reports", e);
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return null;
+		}
+	}
+	
 
 
-	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	@RequestMapping(value = "/report/list", method = RequestMethod.GET)
 	public @ResponseBody
 	String list()
 	{
@@ -144,9 +189,17 @@ public class DataController
 		return null;
 	}
 	
+//	@RequestMapping(value = "/", method = RequestMethod.GET)
+//	public String index()
+//	{
+//		return "index";
+//	}
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index()
+	public String index(Model model)
 	{
+		List<Agent> agents = dao.getAgents();
+		model.addAttribute("agents", agents);
 		return "index";
 	}
 	
@@ -309,6 +362,9 @@ public class DataController
 			Contacts cc = (Contacts) unMarshaller.unmarshal(new StreamSource(
 					new FileInputStream(file)));
 			file.delete();
+			
+			//TODO kitesztelni
+//			Contacts c = (Contacts) unMarshaller.unmarshal(new StreamSource(IOUtils.toInputStream(contacts)));
 
 			Agent agent = dao.getAgentByAddress(macAddress);
 			byte[] agentPublicKey = publicKey.getBytes();

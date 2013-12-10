@@ -5,7 +5,7 @@
 
 <html>
 <head>
-<link rel="stylesheet" href="css/design.css" type="text/css" />
+<link rel="stylesheet" href="../css/design.css" type="text/css" />
 </head>
 <body>
 	<h1>Reports</h1>
@@ -58,11 +58,16 @@
 </body>
 
 <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
-<script src="resources/jquery-1.9.1.min.js" type="text/javascript"></script>
-<script src="resources/amcharts.js" type="text/javascript"></script>
-<script src="resources/serial.js" type="text/javascript"></script>
-<script src="resources/JSController.js" type="text/javascript"></script>
+<script type="text/javascript">
+	var address = '${address}';
+	console.log("Refresh reports for: " + address);
+</script>
+<script src="../resources/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var jq = jQuery.noConflict();
 </script>
+<script src="../resources/amcharts.js" type="text/javascript"></script>
+<script src="../resources/serial.js" type="text/javascript"></script>
+<script src="../resources/JSController.js" type="text/javascript"></script>
+
 </html>

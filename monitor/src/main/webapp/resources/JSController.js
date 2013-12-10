@@ -3,10 +3,17 @@ window.setInterval(refresh, 1000);
 var chartData = [];
 var isLoaded = false;
 var attributes = [];
+var address;
+
+//function setAddress(currentAddress) {
+//	address = currentAddress;
+//	console.log(address);
+//}
 
 function refresh()
 {
-	console.log("1");
+//	var address = '<c:out value="${address}"/>';
+//	console.log("Refresh reports for: " + address);
 	jq.ajax(
 			{
 				url : "list",
@@ -72,6 +79,9 @@ function refresh()
 			});
 
 }
+
+
+jq(document).ready(refresh());
 
 var chart;
 

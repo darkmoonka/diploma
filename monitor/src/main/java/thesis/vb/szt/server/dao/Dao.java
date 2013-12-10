@@ -69,6 +69,14 @@ public class Dao
 			return null;
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Agent> getAgents() {
+		return (List<Agent>)sessionFactory.getCurrentSession()
+				.createSQLQuery("SELECT * FROM Agent")
+				.addEntity(Agent.class)
+				.list();
+	}
 
 	public Contact getContactById(int id)
 	{
@@ -149,8 +157,8 @@ public class Dao
 			return true;
 		} catch (Exception e)
 		{
+			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			Notifier.error(logger, "Cannot create table " + TABLE_PREFIX + mac, e);
-			// logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
 	}
@@ -379,5 +387,11 @@ public class Dao
 				// logger.error("Unable to close database connection", e);
 			}
 		}
+	}
+
+	public List<Map<String, String>> getReports(String address)
+	{
+		//TODO
+		return null;
 	}
 }
