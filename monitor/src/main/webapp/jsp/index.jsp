@@ -5,29 +5,41 @@
 
 <html>
 <head>
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap-theme.css" type="text/css" />
+<link rel="stylesheet" href="css/bootstrap-theme.min.css" type="text/css" />
 <link rel="stylesheet" href="css/list.css" type="text/css" />
+
 </head>
 <body>
-	<h1>Reports</h1>
-<body>
 
+	
+	
 	<div id="content">
-
-
-		<%-- 		<c:forEach var="agent" items=${agents}> --%>
-		<ul>
-			<c:forEach var="agent" items="${agents}">
-				<li>
-					<a href="reports/${agent.address}" class="listItem" onclick="setAddress('${agent.address}')">
-<%-- 					<div class="listItem" onclick="getReport('${agent.address}')"> --%>
-						<c:out value="${agent.name}"></c:out>
-						<c:out value="${agent.address}"></c:out>
-					</a>
-				</li>
-			</c:forEach>
-		</ul>
+		<h1>Reports</h1>
+		<div class="well">
+		
+				<%-- 		<c:forEach var="agent" items=${agents}> --%>
+			<ul>
+				<c:forEach var="agent" items="${agents}">
+					<li>
+						<a href="reports/${agent.address}" class="listItem" onclick="setAddress('${agent.address}')">
+		<%--					<div class="listItem" onclick="getReport('${agent.address}')"> --%>
+							<c:out value="${agent.name}"></c:out>
+							<c:out value="${agent.address}"></c:out>
+						</a>
+					</li>
+				</c:forEach>
+				<li><a href ="#" class="listItem">Almafa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Körtefa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Szilvafa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Barackfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Cseresznyefa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+			</ul>
+		</div>
 	</div>
-
 </body>
 
 <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
