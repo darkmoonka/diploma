@@ -14,6 +14,11 @@
 	<div id="chartdiv" style="width: 1200px; height: 362px;"></div>
 
 
+	<div >
+		<form id="checkboxes">
+		</form>
+	</div>
+
 	<div class="reports">
 
 		<c:if test="${!empty reportList}">
@@ -55,19 +60,19 @@
 		</c:if>
 	</div>
 
+
 </body>
 
-<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type="text/javascript">
 	var address = '${address}';
 	console.log("Refresh reports for: " + address);
 </script>
-<script src="../resources/jquery-1.9.1.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 	var jq = jQuery.noConflict();
 </script>
 <script src="../resources/amcharts.js" type="text/javascript"></script>
 <script src="../resources/serial.js" type="text/javascript"></script>
-<script src="../resources/JSController.js" type="text/javascript"></script>
+<script src="../resources/report.js" type="text/javascript"></script>
 
 </html>

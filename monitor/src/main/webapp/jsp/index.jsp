@@ -7,8 +7,8 @@
 <head>
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
 <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
-<link rel="stylesheet" href="css/bootstrap-theme.css" type="text/css" />
-<link rel="stylesheet" href="css/bootstrap-theme.min.css" type="text/css" />
+<!-- <link rel="stylesheet" href="css/bootstrap-theme.css" type="text/css" /> -->
+<!-- <link rel="stylesheet" href="css/bootstrap-theme.min.css" type="text/css" /> -->
 <link rel="stylesheet" href="css/list.css" type="text/css" />
 
 </head>
@@ -37,6 +37,16 @@
 				<li><a href ="#" class="listItem">Barackfa AB_SD_DF_AS_DS_JL</a></li>
 				<li><a href ="#" class="listItem">Cseresznyefa AB_SD_DF_AS_DS_JL</a></li>
 				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
 			</ul>
 		</div>
 	</div>
@@ -48,7 +58,7 @@
 	var jq = jQuery.noConflict();
 </script>
 
-<script src="resources/json2.min.js" type="text/javascript"></script>
+<!-- <script src="resources/json2.min.js" type="text/javascript"></script> -->
 <script src="resources/index.js" type="text/javascript"></script>
 <!-- <script src="resources/JSController.js" type="text/javascript"></script> -->
 

@@ -20,7 +20,7 @@ function refresh()
 				type : "GET",
 				success : function(data)
 				{
-					console.log(data);
+					//console.log(data);
 					table = jq.parseJSON(data);
 
 					var reportTable = jq(".reports");
