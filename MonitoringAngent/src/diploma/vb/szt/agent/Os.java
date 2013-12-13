@@ -19,7 +19,7 @@ public class Os extends MonitoredItem
 		super("Os");
 
 		SysInfo systemInfo = new SysInfo();
-		systemInfo.gather(sigar);;
+		systemInfo.gather(sigar);
 		osName = systemInfo.getName();
 		osVersion = systemInfo.getVersion();
 		architecture = systemInfo.getArch();

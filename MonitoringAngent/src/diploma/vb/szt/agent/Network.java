@@ -38,7 +38,8 @@ public class Network extends MonitoredItem
 		super("Network");
 
 		interfaceName = getActiveInterface();
-		NetInfo netInfo = sigar.getNetInfo();
+		NetInfo netInfo = new NetInfo();
+		netInfo.gather(sigar);
 		NetInterfaceConfig config = sigar.getNetInterfaceConfig(interfaceName);
 
 		defaultGateway = netInfo.getDefaultGateway();
@@ -57,9 +58,9 @@ public class Network extends MonitoredItem
 				.getNetworkInterfaces();
 		for (NetworkInterface netint : Collections.list(nets))
 		{
-			// TODO windowson mi a localhost interface neve?
+			// TODO windowson mi a localhost interface neve? talán "lo" beírtam de tesztelni kell
 			// TODO lehet majd config paraméter kéne
-			if (!netint.getName().equalsIgnoreCase("lo0"))
+			if (!netint.getName().equalsIgnoreCase("lo0") && !netint.getName().equalsIgnoreCase("lo"))
 				return netint.getName();
 		}
 

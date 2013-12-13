@@ -12,7 +12,7 @@
 	<Agent>
 		<idFile>agentId.txt</idFile>
 		<repeatPeriod>2000</repeatPeriod>
-		<Name>Almafa</Name>
+		<Name>RemoteAlma</Name>
 	</Agent>
 	<Features>
 		<Os>true</Os>
@@ -25,15 +25,7 @@
 	<Contacts>
 		<Contact>
 			<Name>Pista</Name>
-			<Email>s.zakaly.tibi@gmail.com</Email>
-		</Contact>
-		<Contact>
-			<Name>Mari</Name>
-			<Email>sz.akaly.tibi@gmail.com</Email>
-		</Contact>
-		<Contact>
-			<Name>Zsuzsi</Name>
-			<Email>sza.kaly.tibi@gmail.com</Email>
+			<Email>tester.tatu@gmail.com</Email>
 		</Contact>
 	</Contacts>
 </Settings>
