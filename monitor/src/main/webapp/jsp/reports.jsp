@@ -4,25 +4,24 @@
 
 <html>
 <head>
-<link rel="stylesheet" href="../css/design.css" type="text/css" />
 <link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../css/design.css" type="text/css" />
 <link rel="stylesheet" href="../css/reports.css" type="text/css" />
 </head>
 <body>
 	<header>
-		<h1>Reports for ${name}</h1>
+	<h1>Reports for ${name}</h1>
 	</header>
 	<div class="container">
 		<div class="content">
-		
+
 			<div id="chartdiv"></div>
-			
+
 			<div id="checkboxdiv">
 				<form id="checkboxes"></form>
 			</div>
 
 			<div class="reports">
-
 				<c:if test="${!empty reportList}">
 					<table>
 						<tr>
@@ -40,24 +39,23 @@
 							<th>Process count</th>
 							<th>Time stamp</th>
 						</tr>
-						<c:forEach items="${reportList}" var="report">
-				
-		    <tr>
-								<td>${report.id}</td>
-								<td>${report.memorySizeMb}</td>
-								<td>${report.memoryFreePercent}</td>
-								<td>${report.cpuCoreNumber}</td>
-								<td>${report.cpuFrequency}</td>
-								<td>${report.cpuVendor}</td>
-								<td>${report.storageSizeGb}</td>
-								<td>${report.storageFreeGb}</td>
-								<td>${report.architecture}</td>
-								<td>${report.osName}</td>
-								<td>${report.osVersion}</td>
-								<td>${report.processCount}</td>
-								<td>${report.timeStamp}</td>
-							</tr>
-						</c:forEach>
+					<c:forEach items="${reportList}" var="report">
+		    			<tr>
+							<td>${report.id}</td>
+							<td>${report.memorySizeMb}</td>
+							<td>${report.memoryFreePercent}</td>
+							<td>${report.cpuCoreNumber}</td>
+							<td>${report.cpuFrequency}</td>
+							<td>${report.cpuVendor}</td>
+							<td>${report.storageSizeGb}</td>
+							<td>${report.storageFreeGb}</td>
+							<td>${report.architecture}</td>
+							<td>${report.osName}</td>
+							<td>${report.osVersion}</td>
+							<td>${report.processCount}</td>
+							<td>${report.timeStamp}</td>
+						</tr>
+					</c:forEach>
 					</table>
 				</c:if>
 			</div>
