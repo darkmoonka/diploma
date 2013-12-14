@@ -209,11 +209,11 @@ public class Dao
 
 	
 	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> getAgent(String mac)
+	public List<Map<String, String>> getReportsForAgent(String mac)
 	{
 		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 
-		Set<String> tableNames = getTableNames();
+//		Set<String> tableNames = getTableNames();
 		
 		String tableName = TABLE_PREFIX + mac;
 		String query = "SELECT * FROM " + tableName;

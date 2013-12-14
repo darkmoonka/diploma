@@ -93,9 +93,12 @@ function setShownAttributesDefault()
 		var checked = "";
 		if (temp[attributes[attr]])
 			checked = "checked";
-		form.append("<input type=\"checkbox\" id=\"" + attributes[attr] + "\" "
-				+ checked + " onclick=\"onChange(" + attr + ")\">"
-				+ attributes[attr]);
+		form.append("<input type=\"checkbox\" " +
+							"class=\"checkbox-instance\" " +
+							"id=\"" + attributes[attr] + "\" "
+							+ checked + 
+							" onclick=\"onChange(" + attr + ")\">"
+					+ "<span class=\"checkbox-attribute\">  " + attributes[attr] + "</span>" + "<br />");
 	}
 }
 
