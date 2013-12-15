@@ -16,7 +16,7 @@
 		<div class="content">
 
 			<div id="chartdiv"></div>
-
+<!-- 			<div id="reportsdiv"></div> -->
 			<div id="checkboxdiv">
 				<form id="checkboxes"></form>
 			</div>
@@ -24,21 +24,23 @@
 			<div class="reports">
 				<c:if test="${!empty reportList}">
 					<table>
-						<tr>
-							<th>Id</th>
-							<th>Size of memory(MB)</th>
-							<th>Free memory(%)</th>
-							<th>Number of cpu cores</th>
-							<th>Cpu frequency</th>
-							<th>Vendor of Cpu</th>
-							<th>Size of storage(GB)</th>
-							<th>Size of free storage(GB)</th>
-							<th>Architecture</th>
-							<th>OS name</th>
-							<th>OS version</th>
-							<th>Process count</th>
-							<th>Time stamp</th>
-						</tr>
+						<thead>
+							<tr>
+								<th>Id</th>
+								<th>Size of memory(MB)</th>
+								<th>Free memory(%)</th>
+								<th>Number of cpu cores</th>
+								<th>Cpu frequency</th>
+								<th>Vendor of Cpu</th>
+								<th>Size of storage(GB)</th>
+								<th>Size of free storage(GB)</th>
+								<th>Architecture</th>
+								<th>OS name</th>
+								<th>OS version</th>
+								<th>Process count</th>
+								<th>Time stamp</th>
+							</tr>
+						</thead>
 					<c:forEach items="${reportList}" var="report">
 		    			<tr>
 							<td>${report.id}</td>

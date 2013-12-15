@@ -1,11 +1,16 @@
 @CHARSET "UTF-8";
 
 #chartdiv {
-	width: 1000px; 
-/* 	height: 362px; */
+	width: 1000px;
+	/* 	height: 362px; */
 	height: 332px;
 	margin: 0 auto;
 }
+
+/* .reportsdiv { */
+/* 	height: 500px; */
+/* 	overflow: auto; */
+/* } */
 
 .reports {
 	overflow: auto;
@@ -17,6 +22,7 @@
 #checkboxdiv {
 	margin: 10 auto;
 	width: 200px;
+	height: 500px;
 	display: inline-block;
 	vertical-align: top;
 }
@@ -24,12 +30,13 @@
 #checkboxes {
 	padding: 10px;
 	font-size: 20px;
-/* 	width: 200px; */
+	/* 	width: 200px; */
 }
 
 .checkbox-attribute {
-/* 	border-collapse:separate; */
-/* 	border-spacing:10px 50px; */
+	/* 	border-collapse:separate; */
+	/* 	border-spacing:10px 50px; */
+	
 }
 
 table {
@@ -37,10 +44,21 @@ table {
 	text-align: center;
 }
 
-/* Zebra striping */
-tr:nth-of-type(odd) {
-	background: #eee;
+thead {
+	background-color: #000268;
+	color: #FFFFFF;
+	text-align: center;
+	position: fixed;
+	top: 0px;
 }
+
+/* thead th { */
+/* 	height: 50px; */
+/* 	width: 120px; */
+/* 	text-align: center; */
+/* 	border-width: 1px; */
+/* 	border-style: outset; */
+/* } */
 
 th {
 	background: #333;
@@ -49,7 +67,17 @@ th {
 	padding: 6px;
 	border: 1px solid #ccc;
 	font-size: 20px;
+	
+	text-align: center;
+	border-style: outset;
 }
+
+/* Zebra striping */
+/* tr:nth-of-type(odd) { */
+/* 	background: #eee; */
+/* } */
+
+
 
 td {
 	padding-left: 25px;
@@ -57,6 +85,7 @@ td {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	border: 1px solid #ccc;
+	text-align: center;
 }
 
 tr:first-child th:first-child {
@@ -82,23 +111,20 @@ tr:last-child td:last-child {
 	-webkit-border-bottom-right-radius: 18px;
 	border-bottom-right-radius: 8px;
 }
-h1
-{
+
+h1 {
 	text-align: center;
 }
 
-::-webkit-scrollbar
-{
-  width: 12px;  /* for vertical scrollbars */
-  height: 12px; /* for horizontal scrollbars */
+::-webkit-scrollbar {
+	width: 12px; /* for vertical scrollbars */
+	height: 12px; /* for horizontal scrollbars */
 }
 
-::-webkit-scrollbar-track
-{
-  background: rgba(0, 0, 0, 0.1);
+::-webkit-scrollbar-track {
+	background: rgba(0, 0, 0, 0.1);
 }
 
-::-webkit-scrollbar-thumb
-{
-  background: rgba(0, 0, 0, 0.5);
+::-webkit-scrollbar-thumb {
+	background: rgba(0, 0, 0, 0.5);
 }

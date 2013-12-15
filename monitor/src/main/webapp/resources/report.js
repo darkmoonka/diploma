@@ -20,7 +20,7 @@ function refresh()
 			reportTable.text("");
 
 			var k = 0;
-			reportTable.append("<table><tr>");
+			reportTable.append("<table><thead><tr>");
 			for ( var key in table[0])
 			{
 				if (isLoaded && attributes[k] == key && showAttributes[k][key] == true)
@@ -30,7 +30,7 @@ function refresh()
 				k++;
 			}
 
-			reportTable.append("</tr>");
+			reportTable.append("</tr></thead>");
 
 			for ( var j = 0; j < table.length - 1; j++)
 			{
