@@ -25,6 +25,7 @@
 	height: 500px;
 	display: inline-block;
 	vertical-align: top;
+	overflow: auto;
 }
 
 #checkboxes {
