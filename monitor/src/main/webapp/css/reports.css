@@ -1,0 +1,103 @@
+@CHARSET "UTF-8";
+
+#chartdiv {
+	width: 1000px; 
+/* 	height: 362px; */
+	height: 332px;
+	margin: 0 auto;
+}
+
+.reports {
+	overflow: auto;
+	display: inline-block;
+	width: 80%;
+}
+
+#checkboxdiv {
+	margin: 10 auto;
+	width: 200px;
+	display: inline-block;
+	vertical-align: top;
+}
+
+#checkboxes {
+	padding: 10px;
+	font-size: 20px;
+/* 	width: 200px; */
+}
+
+.checkbox-attribute {
+/* 	border-collapse:separate; */
+/* 	border-spacing:10px 50px; */
+}
+
+table {
+	border-spacing: 0;
+	text-align: center;
+}
+
+/* Zebra striping */
+tr:nth-of-type(odd) {
+	background: #eee;
+}
+
+th {
+	background: #333;
+	color: white;
+	font-weight: bold;
+	padding: 6px;
+	border: 1px solid #ccc;
+	font-size: 20px;
+}
+
+td {
+	padding-left: 25px;
+	padding-right: 25px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	border: 1px solid #ccc;
+}
+
+tr:first-child th:first-child {
+	-moz-border-radius-topleft: 18px;
+	-webkit-border-top-left-radius: 18px;
+	border-top-left-radius: 18px;
+}
+
+tr:first-child th:last-child {
+	-moz-border-radius-topright: 18px;
+	-webkit-border-top-right-radius: 18px;
+	border-top-right-radius: 18px;
+}
+
+tr:last-child td:first-child {
+	-moz-border-radius-bottomleft: 18px;
+	-webkit-border-bottom-left-radius: 18px;
+	border-bottom-left-radius: 18px;
+}
+
+tr:last-child td:last-child {
+	-moz-border-radius-bottomright: 18px;
+	-webkit-border-bottom-right-radius: 18px;
+	border-bottom-right-radius: 8px;
+}
+h1
+{
+	text-align: center;
+}
+
+::-webkit-scrollbar
+{
+  width: 12px;  /* for vertical scrollbars */
+  height: 12px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
