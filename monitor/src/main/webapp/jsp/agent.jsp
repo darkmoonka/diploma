@@ -27,5 +27,5 @@
 <script src="../resources/json2.min.js" type="text/javascript"></script>
 <script src="../resources/amcharts.js" type="text/javascript"></script>
 <script src="../resources/serial.js" type="text/javascript"></script>
-<!-- <script src="../resources/AgentController.js" type="text/javascript"></script> -->
+<!-- <script src="../resources/report.js" type="text/javascript"></script> -->
 </html>

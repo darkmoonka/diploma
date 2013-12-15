@@ -32,22 +32,9 @@
 						</a>
 					</li>
 				</c:forEach>
-				<li><a href ="#" class="listItem">Almafa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Körtefa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Szilvafa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Barackfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Cseresznyefa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
-				<li><a href ="#" class="listItem">Banánfa AB_SD_DF_AS_DS_JL</a></li>
+				<li><a href ="#" class="listItem">Gomboc 00_00_20_16_27_AA</a></li>
+				<li><a href ="#" class="listItem">Artur 64_70_12_20_9A_14</a></li>
+				<li><a href ="#" class="listItem">Work E0_18_17_14_EE_82</a></li>
 			</ul>
 		</div>
 	</div>
