@@ -22,44 +22,6 @@
 			</div>
 
 			<div class="reports">
-				<c:if test="${!empty reportList}">
-					<table>
-						<thead>
-							<tr>
-								<th>Id</th>
-								<th>Size of memory(MB)</th>
-								<th>Free memory(%)</th>
-								<th>Number of cpu cores</th>
-								<th>Cpu frequency</th>
-								<th>Vendor of Cpu</th>
-								<th>Size of storage(GB)</th>
-								<th>Size of free storage(GB)</th>
-								<th>Architecture</th>
-								<th>OS name</th>
-								<th>OS version</th>
-								<th>Process count</th>
-								<th>Time stamp</th>
-							</tr>
-						</thead>
-					<c:forEach items="${reportList}" var="report">
-		    			<tr>
-							<td>${report.id}</td>
-							<td>${report.memorySizeMb}</td>
-							<td>${report.memoryFreePercent}</td>
-							<td>${report.cpuCoreNumber}</td>
-							<td>${report.cpuFrequency}</td>
-							<td>${report.cpuVendor}</td>
-							<td>${report.storageSizeGb}</td>
-							<td>${report.storageFreeGb}</td>
-							<td>${report.architecture}</td>
-							<td>${report.osName}</td>
-							<td>${report.osVersion}</td>
-							<td>${report.processCount}</td>
-							<td>${report.timeStamp}</td>
-						</tr>
-					</c:forEach>
-					</table>
-				</c:if>
 			</div>
 		</div>
 	</div>
@@ -79,3 +41,44 @@
 <script src="../resources/report.js" type="text/javascript"></script>
 
 </html>
+
+
+
+<%-- 				<c:if test="${!empty reportList}"> --%>
+<!-- 					<table> -->
+<!-- 						<thead> -->
+<!-- 							<tr> -->
+<!-- 								<th>Id</th> -->
+<!-- 								<th>Size of memory(MB)</th> -->
+<!-- 								<th>Free memory(%)</th> -->
+<!-- 								<th>Number of cpu cores</th> -->
+<!-- 								<th>Cpu frequency</th> -->
+<!-- 								<th>Vendor of Cpu</th> -->
+<!-- 								<th>Size of storage(GB)</th> -->
+<!-- 								<th>Size of free storage(GB)</th> -->
+<!-- 								<th>Architecture</th> -->
+<!-- 								<th>OS name</th> -->
+<!-- 								<th>OS version</th> -->
+<!-- 								<th>Process count</th> -->
+<!-- 								<th>Time stamp</th> -->
+<!-- 							</tr> -->
+<!-- 						</thead> -->
+<%-- 					<c:forEach items="${reportList}" var="report"> --%>
+<!-- 		    			<tr> -->
+<%-- 							<td>${report.id}</td> --%>
+<%-- 							<td>${report.memorySizeMb}</td> --%>
+<%-- 							<td>${report.memoryFreePercent}</td> --%>
+<%-- 							<td>${report.cpuCoreNumber}</td> --%>
+<%-- 							<td>${report.cpuFrequency}</td> --%>
+<%-- 							<td>${report.cpuVendor}</td> --%>
+<%-- 							<td>${report.storageSizeGb}</td> --%>
+<%-- 							<td>${report.storageFreeGb}</td> --%>
+<%-- 							<td>${report.architecture}</td> --%>
+<%-- 							<td>${report.osName}</td> --%>
+<%-- 							<td>${report.osVersion}</td> --%>
+<%-- 							<td>${report.processCount}</td> --%>
+<%-- 							<td>${report.timeStamp}</td> --%>
+<!-- 						</tr> -->
+<%-- 					</c:forEach> --%>
+<!-- 					</table> -->
+<%-- 				</c:if> --%>

@@ -20,7 +20,7 @@
 		<Storage>true</Storage>
 		<Memory>true</Memory>
 		<Process>true</Process>
-		<Network>true</Network>
+		<Network>false</Network>
 	</Features>
 	<Contacts>
 		<Contact>

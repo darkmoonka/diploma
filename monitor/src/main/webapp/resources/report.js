@@ -30,7 +30,7 @@ function refresh()
 				k++;
 			}
 
-			reportTable.append("</tr></thead>");
+			reportTable.append("</tr></thead><tbody>");
 
 			for ( var j = 0; j < table.length - 1; j++)
 			{
@@ -51,7 +51,7 @@ function refresh()
 
 			}
 
-			reportTable.append("</table>");
+			reportTable.append("</tbody></table>");
 			reportTable.append("</br>");
 
 			// chart
