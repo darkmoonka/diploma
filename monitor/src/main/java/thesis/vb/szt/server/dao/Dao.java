@@ -36,6 +36,9 @@ public class Dao
 	private final String SQL_SEPARATOR = ", ";
 	private final String TABLE_PREFIX = "report_";
 
+	@Autowired(required = true)
+	Notifier notifier;
+
 	@Autowired
 	private SessionFactory sessionFactory;
 
@@ -63,19 +66,53 @@ public class Dao
 			return agent;
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Agent not found in DB with address: " + macAddress, e);
+			notifier.error(logger, "Agent not found in DB with address: " + macAddress, e);
 			// logger.error("Agent not found in DB with address: " + macAddress,
 			// e);
 			return null;
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public List<Agent> getAgents() {
-		return (List<Agent>)sessionFactory.getCurrentSession()
-				.createSQLQuery("SELECT * FROM Agent")
-				.addEntity(Agent.class)
-				.list();
+	public List<Agent> getAgents()
+	{
+		return (List<Agent>) sessionFactory.getCurrentSession()
+				.createSQLQuery("SELECT * FROM Agent").addEntity(Agent.class).list();
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Agent> getAgentsByContactId(int id)
+	{
+		List<Agent> result = null;
+		try
+		{
+			result = (List<Agent>) sessionFactory
+					.getCurrentSession()
+					.createSQLQuery(
+							"SELECT * FROM Agent JOIN Agent_contact ON Agent_contact.agent_id = Agent.agent_id WHERE "
+									+ "Agent_contact.agent_id = :agent_id")
+					.addEntity(Agent.class).setParameter("agent_id", id).list();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public Contact getContactByEmail(String email)
+	{
+		try
+		{
+			final String queryString = "SELECT c FROM Contact c " + "WHERE c.email = :email";
+			Contact contact = (Contact) sessionFactory.getCurrentSession()
+					.createQuery(queryString).setString("email", email).uniqueResult();
+			return contact;
+		} catch (Exception e)
+		{
+			logger.error("Unable to get contact by email: " + email);
+			return null;
+		}
 	}
 
 	public Contact getContactById(int id)
@@ -85,7 +122,7 @@ public class Dao
 			return (Contact) sessionFactory.getCurrentSession().get(Contact.class, id);
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Contact not found in DB with id: " + id, e);
+			notifier.error(logger, "Contact not found in DB with id: " + id, e);
 			// logger.error("Contact not found in DB with id: " + id, e);
 			return null;
 		}
@@ -98,7 +135,7 @@ public class Dao
 			return (Agent) sessionFactory.getCurrentSession().get(Agent.class, agentId);
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Unable to get agent with agentId: " + agentId, e);
+			notifier.error(logger, "Unable to get agent with agentId: " + agentId, e);
 			// logger.error("Unable to get agent with agentId: " + agentId, e);
 			return null;
 		}
@@ -114,7 +151,7 @@ public class Dao
 			return (Integer) sessionFactory.getCurrentSession().save(agent);
 		} catch (HibernateException e)
 		{
-			Notifier.error(logger,
+			notifier.error(logger,
 					"Unable to add agent to database with address: " + agent.getAddress(), e);
 			// logger.error(
 			// "Unable to add agent to database with address: " +
@@ -132,7 +169,7 @@ public class Dao
 			return (Integer) sessionFactory.getCurrentSession().save(contact);
 		} catch (HibernateException e)
 		{
-			Notifier.error(logger, "Unable to add contact to database", e);
+			notifier.error(logger, "Unable to add contact to database", e);
 			// logger.error("Unable to add contact to database");
 			return null;
 		}
@@ -158,7 +195,7 @@ public class Dao
 		} catch (Exception e)
 		{
 			logger.error("Cannot create table " + TABLE_PREFIX + mac, e);
-			Notifier.error(logger, "Cannot create table " + TABLE_PREFIX + mac, e);
+			notifier.error(logger, "Cannot create table " + TABLE_PREFIX + mac, e);
 			return false;
 		}
 	}
@@ -207,17 +244,16 @@ public class Dao
 		return result;
 	}
 
-	
 	@SuppressWarnings("unchecked")
 	public List<Map<String, String>> getReportsForAgent(String mac)
 	{
 		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 
-//		Set<String> tableNames = getTableNames();
-		
+		// Set<String> tableNames = getTableNames();
+
 		String tableName = TABLE_PREFIX + mac;
 		String query = "SELECT * FROM " + tableName;
-		
+
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
 
 		List<String> reportKeys = getReportAttributes(tableName);
@@ -236,11 +272,10 @@ public class Dao
 			}
 			result.add(reportInstance);
 		}
-	
+
 		return result;
 	}
 
-	
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
 		StringBuilder keyString = new StringBuilder(" (timestamp" + SQL_SEPARATOR + " ");
@@ -263,7 +298,7 @@ public class Dao
 			valuesString.append("\"" + dateString + "\"" + SQL_SEPARATOR);
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Cannot parse date", e);
+			notifier.error(logger, "Cannot parse date", e);
 			// logger.error("cannot parse date", e);
 		}
 
@@ -286,7 +321,7 @@ public class Dao
 			return true;
 		} else
 		{
-			Notifier.error(logger, "Inserted " + updatedNum + " reports instead of 1.", null);
+			notifier.error(logger, "Inserted " + updatedNum + " reports instead of 1.", null);
 			// logger.error("Inserted " + updatedNum +
 			// " reports instead of 1.");
 			return false;
@@ -312,7 +347,7 @@ public class Dao
 			}
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Unable to get table columns", e);
+			notifier.error(logger, "Unable to get table columns", e);
 			// logger.error("Unable to get table columns", e);
 			return null;
 		} finally
@@ -322,7 +357,7 @@ public class Dao
 				conn.close();
 			} catch (Exception e)
 			{
-				Notifier.error(logger, "Unable to close database connection", e);
+				notifier.error(logger, "Unable to close database connection", e);
 				// logger.error("Unable to close database connection", e);
 			}
 		}
@@ -334,7 +369,8 @@ public class Dao
 	public List<Map<String, String>> getAgentNamesAndMacs()
 	{
 		String query = "SELECT name, address FROM Agent";
-		List<Map<String, String>> result = sessionFactory.getCurrentSession().createQuery(query).list();
+		List<Map<String, String>> result = sessionFactory.getCurrentSession()
+				.createQuery(query).list();
 
 		return result;
 	}
@@ -373,7 +409,7 @@ public class Dao
 			return result;
 		} catch (Exception e)
 		{
-			Notifier.error(logger, "Unable to get table columns", e);
+			notifier.error(logger, "Unable to get table columns", e);
 			// logger.error("Unable to get table columns", e);
 			return null;
 		} finally
@@ -383,15 +419,50 @@ public class Dao
 				conn.close();
 			} catch (Exception e)
 			{
-				Notifier.error(logger, "Unable to close database connection", e);
+				notifier.error(logger, "Unable to close database connection", e);
 				// logger.error("Unable to close database connection", e);
 			}
 		}
 	}
 
-	public List<Map<String, String>> getReports(String address)
+	// public List<Map<String, String>> getReports(String address)
+	// {
+	// //TODO
+	// return null;
+	// }
+
+	public boolean updateContact(String username, String password, String email)
 	{
-		//TODO
-		return null;
+		try
+		{
+			Contact contact = getContactByEmail(email);
+			contact.setUsername(username);
+			contact.setPassword(password);
+
+			sessionFactory.getCurrentSession().flush();
+			logger.info("Successfully updated contact: " + username);
+			return true;
+		} catch (Exception e)
+		{
+			logger.error("Unable to update contact with email: " + email, e);
+			return false;
+		}
 	}
+
+	public Contact getContactByUsername(String username)
+	{
+		try
+		{
+			final String queryString = "SELECT c FROM Contact c"
+					+ " WHERE c.username = :username";
+			Contact contact = (Contact) sessionFactory.getCurrentSession()
+					.createQuery(queryString).setString("username", username).uniqueResult();
+			return contact;
+		} catch (Exception e)
+		{
+			logger.error("Unable to fetch user \"" + username + "\" from database", e);
+			return null;
+		}
+	}
+
 }

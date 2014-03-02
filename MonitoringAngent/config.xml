@@ -20,12 +20,12 @@
 		<Storage>true</Storage>
 		<Memory>true</Memory>
 		<Process>true</Process>
-		<Network>true</Network>
+		<Network>false</Network>
 	</Features>
 	<Contacts>
 		<Contact>
 			<Name>Pista</Name>
-			<Email>tester.tatu@gmail.com</Email>
+			<Email>valoczy.balint@gmail.com</Email>
 		</Contact>
 	</Contacts>
 </Settings>

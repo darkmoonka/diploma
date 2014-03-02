@@ -8,14 +8,12 @@ import java.util.Set;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class Notifier
 {
-	@Autowired
-	public static Mail mail;
+	public Mail mail;
 
-	public static void error(Logger logger, String message, Throwable throwable)
+	public void error(Logger logger, String message, Throwable throwable)
 	{
 		Set<Contact> admins = getAdmins();
 
@@ -36,6 +34,11 @@ public class Notifier
 		}
 
 		logger.error(message, throwable);
+	}
+
+	public void sendInfoMail(String to, String name, String subject, String body)
+	{
+		mail.sendMail(to, name, subject, body);
 	}
 
 	private static Set<Contact> getAdmins()
@@ -67,13 +70,13 @@ public class Notifier
 		return null;
 	}
 
-	public static Mail getMail()
+	public Mail getMail()
 	{
 		return mail;
 	}
 
-	public static void setMail(Mail mail)
+	public void setMail(Mail mail)
 	{
-		Notifier.mail = mail;
+		this.mail = mail;
 	}
 }
