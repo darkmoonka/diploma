@@ -20,6 +20,10 @@ public class Mail
 
 		message.setTo(to);
 		message.setSubject(subject);
+		if(name != null && name.isEmpty())
+		{
+			body = "Dear " + name + "!\n\n" + body;
+		}
 		message.setText(body);
 		mailSender.send(message);
 	}

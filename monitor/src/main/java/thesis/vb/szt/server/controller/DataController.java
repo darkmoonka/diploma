@@ -26,11 +26,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Controller;
@@ -64,13 +62,21 @@ public class DataController
 
 	@Autowired(required=true)
 	private Marshaller marshaller;
+	
 	@Autowired(required=true)
 	private Unmarshaller unMarshaller;
 
 	@Autowired(required=true)
 	private ObjectMapper objectMapper;
+	
+	@Autowired(required=true)
+	private Notifier notifier;
 
 	protected static Logger logger = Logger.getLogger("DataController");
+	
+	private final String subject = "New registration";
+	// TODO kiokosítani
+	private final String body = "localhost:8080/monitor/registerUser/";
 	
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public void test()
@@ -86,94 +92,19 @@ public class DataController
 		dao.saveAgent(agent);
 	}
 	
-//	@RequestMapping(value = "/demo", method = RequestMethod.GET)
-//	public void demo()
-//	{
-////		Agent agent = dao.getAgentByAddress("100");
-////		Agent agent = new Agent();
-////		agent.setId(1);
-////		dao.saveAgent(agent);
-//		Notifier.error(logger, "test", new Throwable("testerror"));
-//	}
-//
-//	@RequestMapping(value = "/home", method = RequestMethod.GET)
-//	public String getHomePage()
-//	{
-//		logger.info("Loading home page");
-//		// List<String> attributes = new ArrayList<String>();
-//		// attributes.add(new String("attribute1"));
-//		// attributes.add(new String("attribute2"));
-//		// dao.createReportTable(attributes, mac);
-//
-//		// Map<String, String> report = new HashMap<String, String>();
-//		// report.put("attribute1", "attributeValue1");
-//		// report.put("attribute2", "attributeValue2");
-//		// dao.insertReport(report, mac);
-//		// dao.insertReport(report, mac);
-//		// dao.listReports(-2, mac);
-//		dao.getAllReports(10);
-//
-//		logger.info("Loaded home page");
-//		return "home";
-//	}
-	
+
 	@RequestMapping(value = "/reports/{address}", method = RequestMethod.GET)
 	public String getReportPage(@PathVariable String address, ModelMap model)
 	{
 		logger.info("Loading reports page");
-		// List<String> attributes = new ArrayList<String>();
-		// attributes.add(new String("attribute1"));
-		// attributes.add(new String("attribute2"));
-		// dao.createReportTable(attributes, mac);
-
-		// Map<String, String> report = new HashMap<String, String>();
-		// report.put("attribute1", "attributeValue1");
-		// report.put("attribute2", "attributeValue2");
-		// dao.insertReport(report, mac);
-		// dao.insertReport(report, mac);
-		// dao.listReports(-2, mac);
-//		dao.getAllReports(10);
+		
 		model.addAttribute("name", dao.getAgentByAddress(address).getName());
 		model.addAttribute("address", address);
 		logger.info("Loaded reports page");
 		return "reports";
 	}
 	
-//	@RequestMapping(value = "/reports/{address}", method = RequestMethod.POST)
-//	public @ResponseBody String getReports(@PathVariable String address, HttpServletResponse response)
-//	{
-//		logger.info("Loading reports page");
-////		List<List<Map<String, String>>> reportList = dao.getReports(address);
-//		try
-//		{
-//			String result = objectMapper.writeValueAsString(reportList);
-//			return result;
-//		} catch (IOException e)
-//		{
-//			logger.error("Unable to marshal reports", e);
-//			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//			return null;
-//		}
-//	}
-	
 
-
-//	@RequestMapping(value = "/report/list", method = RequestMethod.GET)
-//	public @ResponseBody
-//	String list()
-//	{
-//		List<List<Map<String, String>>> reportList = dao.getAllReports(100);
-//		try
-//		{
-//			String result = objectMapper.writeValueAsString(reportList);
-//			return result;
-//		} catch (IOException e)
-//		{
-//			logger.error("Unable to marshal reports", e);
-//		}
-//		return null;
-//	}
-	
 	@RequestMapping(value = "/agent/{mac}", method = RequestMethod.GET)
 	public @ResponseBody
 	String getAgent(@PathVariable String mac, Model model)
@@ -398,6 +329,8 @@ public class DataController
 					contact.setEmail(item.getEmail());
 					contact.setName(item.getName());
 					agentContacts.add(contact);
+					
+					notifier.sendInfoMail(item.getEmail(), item.getName(), subject , body);
 				}
 				
 				agent.setContats(agentContacts);
@@ -463,14 +396,17 @@ public class DataController
 		this.unMarshaller = unMarshaller;
 	}
 
-	// @RequestMapping(value = "/index", method = RequestMethod.GET)
-	// public String list(Model model)
-	// {
-	// List<Report> reportList = dao.getAllReports();
-	// model.addAttribute("reportList", reportList);
-	//
-	// return "index";
-	// }
+
+	public Notifier getNotifier()
+	{
+		return notifier;
+	}
+
+
+	public void setNotifier(Notifier notifier)
+	{
+		this.notifier = notifier;
+	}
 
 	
 }
