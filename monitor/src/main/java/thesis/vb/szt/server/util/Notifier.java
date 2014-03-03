@@ -9,6 +9,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 
+import thesis.vb.szt.server.entity.Contact;
+
 public class Notifier
 {
 	public Mail mail;

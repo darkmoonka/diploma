@@ -29,6 +29,12 @@ public class SecurityService implements UserDetailsService {
 	public void setDao(Dao dao) {
 		this.dao = dao;
 	}
+	
+	public int authenticate (String username, String password) {
+		
+		
+		return -1;
+	}
 //
 //	public UserDetails loadUserByUsername(String username)
 //			throws UsernameNotFoundException, DataAccessException {
