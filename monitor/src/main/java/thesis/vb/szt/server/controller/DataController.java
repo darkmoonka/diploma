@@ -49,9 +49,9 @@ import org.xml.sax.InputSource;
 import thesis.vb.szt.server.dao.Dao;
 import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Contact;
+import thesis.vb.szt.server.entity.Contacts;
 import thesis.vb.szt.server.security.Keys;
 import thesis.vb.szt.server.util.CommunicationData;
-import thesis.vb.szt.server.util.Contacts;
 import thesis.vb.szt.server.util.Notifier;
 
 @Controller
@@ -323,7 +323,7 @@ public class DataController
 				
 				Set<Contact> agentContacts = new HashSet<Contact>();
 				
-				for(thesis.vb.szt.server.util.Contact item : cc.getContacts())
+				for(thesis.vb.szt.server.entity.Contact item : cc.getContacts())
 				{
 					Contact contact = new Contact();
 					contact.setEmail(item.getEmail());

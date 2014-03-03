@@ -61,8 +61,12 @@
 		<property name="classesToBeBound">
 			<list>
 				<value>thesis.vb.szt.server.util.CommunicationData</value>
-				<value>thesis.vb.szt.server.util.Contact</value>
-				<value>thesis.vb.szt.server.util.Contacts</value>
+				<value>thesis.vb.szt.server.entity.Contact</value>
+				<value>thesis.vb.szt.server.entity.Contacts</value>
+				<value>thesis.vb.szt.server.entity.Agent</value>
+				<value>thesis.vb.szt.server.entity.AgentSet</value>
+				<value>thesis.vb.szt.server.entity.ReportList</value>
+				<value>thesis.vb.szt.server.entity.ReportMap</value>
 			</list>
 		</property>
 	</bean>

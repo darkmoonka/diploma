@@ -12,10 +12,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "agent")
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(name="agent")
 public class Agent
 {
@@ -28,6 +33,7 @@ public class Agent
 	private String address;
 
 	@Column(name = "publicKey", length = 2048)
+	@XmlTransient
 	private byte[] publicKey;
 
 	@Column(name = "name", unique = true)
@@ -35,6 +41,7 @@ public class Agent
 
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(name = "agent_contact", joinColumns = { @JoinColumn(name = "agent_id", nullable = false) }, inverseJoinColumns = { @JoinColumn(name = "contact_id", nullable = false) })
+	@XmlTransient
 	public Set<Contact> contacts;
 
 	public byte[] getPublicKey()
