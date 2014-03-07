@@ -1,19 +1,13 @@
 package thesis.vb.szt.server.controller;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
-import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import thesis.vb.szt.server.dao.Dao;
 
@@ -22,17 +16,36 @@ import thesis.vb.szt.server.dao.Dao;
 public class SecurityController
 {
 	protected Logger logger = Logger.getLogger(getClass());
-	
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Autowired
 	private Dao dao;
 
-	@RequestMapping(value = "/registerContact", method = RequestMethod.GET)
-	public String getRegisterContact()
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	// TODO /security/login
+	public String getLoginPage(@RequestParam(value = "error", required = false) boolean error,
+			ModelMap model)
 	{
-		return "registerContact";
+
+		logger.debug("Received request to show login page");
+
+		if (error)
+			model.put("error", "You have entered an invalid username or password!");
+		else
+			model.put("error", "");
+
+		return "loginpage";
+	}
+
+	@RequestMapping(value = "/denied", method = RequestMethod.GET)
+	public String getDeniedPage()
+	{
+
+		logger.debug("Received request to show denied page");
+		return "deniedpage";
+
 	}
 
 	@RequestMapping(value = "/registerContact", method = RequestMethod.POST)
@@ -44,12 +57,11 @@ public class SecurityController
 				|| !password.equals(password2))
 		{
 			logger.error("Invalid credentials: " + username + " " + password + " " + password2);
-		}
-		else if(!password.equals(password2)) 
+		} else if (!password.equals(password2))
 		{
-			logger.error("The given passwords does not equal: " + password + " != " + password2);
-		}
-		else
+			logger.error("The given passwords does not equal: " + password + " != "
+					+ password2);
+		} else
 		{
 			password = passwordEncoder.encodePassword(password, null);
 			dao.updateContact(username, password, email);
@@ -57,9 +69,5 @@ public class SecurityController
 		}
 		return "registerContact";
 	}
-	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public void login() {
-		
-	}
+
 }
