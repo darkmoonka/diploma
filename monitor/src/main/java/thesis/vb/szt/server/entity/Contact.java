@@ -43,6 +43,9 @@ public class Contact
 	@XmlTransient
 	private String password;
 
+	@Column(name="role", columnDefinition="Decimal(1,0) default '0'")
+	private int role;
+	
 	@Column(name = "phoneNumber")
 	private String phoneNumber;
 	
@@ -144,6 +147,16 @@ public class Contact
 	public void setPassword(String password)
 	{
 		this.password = password;
+	}
+	
+	public int getRole()
+	{
+		return role;
+	}
+
+	public void setRole(int role)
+	{
+		this.role = role;
 	}
 
 	public String getPhoneNumber()

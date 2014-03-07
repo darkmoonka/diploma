@@ -146,6 +146,7 @@ public class MobileController
 		
 		try {
 			reportList = new ReportList(dao.getReportsForAgent(mac));
+			logger.info("ReportList created:\n" + reportList.toString());
 		} catch (Exception e) {
 			logger.error("Unable to get reports", e);
 			response.setStatus(HttpStatus.NOT_FOUND.value());
