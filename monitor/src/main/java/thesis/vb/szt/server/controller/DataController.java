@@ -51,71 +51,79 @@ import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Contact;
 import thesis.vb.szt.server.entity.Contacts;
 import thesis.vb.szt.server.security.Keys;
+import thesis.vb.szt.server.security.UserService;
 import thesis.vb.szt.server.util.CommunicationData;
 import thesis.vb.szt.server.util.Notifier;
 
 @Controller
 public class DataController
 {
-	@Autowired(required=true)
+	@Autowired(required = true)
 	private Dao dao;
 
-	@Autowired(required=true)
+	@Autowired(required = true)
 	private Marshaller marshaller;
-	
-	@Autowired(required=true)
+
+	@Autowired(required = true)
 	private Unmarshaller unMarshaller;
 
-	@Autowired(required=true)
+	@Autowired(required = true)
 	private ObjectMapper objectMapper;
-	
-	@Autowired(required=true)
+
+	@Autowired(required = true)
 	private Notifier notifier;
 
-	protected static Logger logger = Logger.getLogger("DataController");
+//	@Autowired(required = true)
+//	private SecurityService securityService;
 	
+	protected static Logger logger = Logger.getLogger("DataController");
+
 	private final String subject = "New registration";
 	// TODO kiokosítani
 	private final String body = "localhost:8080/monitor/registerUser/";
-	
+
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public void test()
 	{
-		Agent agent = dao.getAgentById(1);
-		
-		Contact c = new Contact();
-		c.setEmail("asd");
-		Set<Contact> set = new HashSet<Contact>();
-		set.add(c);
-		agent.setContats(set);
-		
-		dao.saveAgent(agent);
+//		try
+//		{
+//			SecretKey secretKey = Keys.generatySymmetricKeyFromPassword("almafa");
+//			String encryptedPassword = securityService.encrypPassword("almafa", secretKey);
+//			logger.info("encrypted: " + encryptedPassword);
+//			String plainPassword = securityService.decryptPassword(secretKey, encryptedPassword);
+//			logger.info("plainPassowrd: " + plainPassword);
+//			
+//			
+//		} catch (Exception e)
+//		{
+//			logger.error("", e);
+//		}
 	}
-	
 
 	@RequestMapping(value = "/reports/{address}", method = RequestMethod.GET)
 	public String getReportPage(@PathVariable String address, ModelMap model)
 	{
 		logger.info("Loading reports page");
-		
+
 		model.addAttribute("name", dao.getAgentByAddress(address).getName());
 		model.addAttribute("address", address);
 		logger.info("Loaded reports page");
 		return "reports";
 	}
-	
 
 	@RequestMapping(value = "/agent/{mac}", method = RequestMethod.GET)
 	public @ResponseBody
 	String getAgent(@PathVariable String mac, Model model)
 	{
 		List<Map<String, String>> reportList = null;
-		try {
+		try
+		{
 			reportList = dao.getReportsForAgent(mac);
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			logger.error("Unable to set reports", e);
 		}
-		
+
 		try
 		{
 			String result = objectMapper.writeValueAsString(reportList);
@@ -126,13 +134,13 @@ public class DataController
 		}
 		return null;
 	}
-	
-//	@RequestMapping(value = "/", method = RequestMethod.GET)
-//	public String index()
-//	{
-//		return "index";
-//	}
-	
+
+	// @RequestMapping(value = "/", method = RequestMethod.GET)
+	// public String index()
+	// {
+	// return "index";
+	// }
+
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model)
 	{
@@ -140,13 +148,13 @@ public class DataController
 		model.addAttribute("agents", agents);
 		return "index";
 	}
-	
+
 	@RequestMapping(value = "/agent", method = RequestMethod.GET)
 	public String agent()
 	{
 		return "agent";
 	}
-	
+
 	@RequestMapping(value = "/init", method = RequestMethod.GET)
 	public @ResponseBody
 	String init()
@@ -160,11 +168,12 @@ public class DataController
 		{
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
-	
-//TODO szétszedni 2 kontrollerré, egyik az agent feltöltéseit nézi, másik a felületet szolgálja ki
+
+	// TODO szétszedni 2 kontrollerré, egyik az agent feltöltéseit nézi, másik a
+	// felületet szolgálja ki
 	@RequestMapping(value = "/postData", method = RequestMethod.POST)
 	public @ResponseBody
 	void postData(@RequestParam("encryptedData") String encryptedData,
@@ -300,9 +309,10 @@ public class DataController
 			Contacts cc = (Contacts) unMarshaller.unmarshal(new StreamSource(
 					new FileInputStream(file)));
 			file.delete();
-			
-			//TODO kitesztelni
-//			Contacts c = (Contacts) unMarshaller.unmarshal(new StreamSource(IOUtils.toInputStream(contacts)));
+
+			// TODO kitesztelni
+			// Contacts c = (Contacts) unMarshaller.unmarshal(new
+			// StreamSource(IOUtils.toInputStream(contacts)));
 
 			Agent agent = dao.getAgentByAddress(macAddress);
 			byte[] agentPublicKey = publicKey.getBytes();
@@ -320,19 +330,19 @@ public class DataController
 				agent.setAddress(macAddress);
 				agent.setPublicKey(agentPublicKey);
 				agent.setName(agentName);
-				
+
 				Set<Contact> agentContacts = new HashSet<Contact>();
-				
-				for(thesis.vb.szt.server.entity.Contact item : cc.getContacts())
+
+				for (thesis.vb.szt.server.entity.Contact item : cc.getContacts())
 				{
 					Contact contact = new Contact();
 					contact.setEmail(item.getEmail());
 					contact.setName(item.getName());
 					agentContacts.add(contact);
-					
-					notifier.sendInfoMail(item.getEmail(), item.getName(), subject , body);
+
+					notifier.sendInfoMail(item.getEmail(), item.getName(), subject, body);
 				}
-				
+
 				agent.setContats(agentContacts);
 				agent.setId(dao.saveAgent(agent));
 			}
@@ -396,17 +406,14 @@ public class DataController
 		this.unMarshaller = unMarshaller;
 	}
 
-
 	public Notifier getNotifier()
 	{
 		return notifier;
 	}
-
 
 	public void setNotifier(Notifier notifier)
 	{
 		this.notifier = notifier;
 	}
 
-	
 }
