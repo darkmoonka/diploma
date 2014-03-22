@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name="reportList")
 public class ReportList
 {
+	@XmlElement(name="reportEntity")
 	private List<ReportMap> reportMapList;
 	
 	public ReportList()

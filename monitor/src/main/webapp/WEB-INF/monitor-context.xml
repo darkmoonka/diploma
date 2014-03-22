@@ -18,15 +18,11 @@
 		<property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
 
-	<!-- <bean id="poiService" class="org.bmema.usedcars.security.PoiService"> -->
-	<!-- <property name="dao" ref="dao"></property> -->
-	<!-- </bean> -->
-
-	<!-- <bean id="registerService" class="org.bmema.usedcars.security.RegisterService"> -->
-	<!-- <property name="dao" ref="dao"></property> -->
-	<!-- </bean> -->
-
 	<bean id="securityService" class="thesis.vb.szt.server.security.SecurityService">
+<!-- 		<property name="dao" ref="dao"></property> -->
+	</bean>
+
+	<bean id="userService" class="thesis.vb.szt.server.security.UserService">
 		<property name="dao" ref="dao"></property>
 	</bean>
 

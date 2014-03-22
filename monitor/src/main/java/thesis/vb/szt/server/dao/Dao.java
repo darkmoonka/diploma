@@ -457,7 +457,9 @@ public class Dao
 					+ " WHERE c.username = :username";
 			Contact contact = (Contact) sessionFactory.getCurrentSession()
 					.createQuery(queryString).setString("username", username).uniqueResult();
-			contact.fillAgentSet();
+			if(contact != null) {
+				contact.fillAgentSet();
+			}
 			return contact;
 		} catch (Exception e)
 		{

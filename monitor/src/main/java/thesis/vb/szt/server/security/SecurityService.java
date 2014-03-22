@@ -1,95 +1,57 @@
 package thesis.vb.szt.server.security;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.io.OutputStream;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.xml.transform.Result;
+
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
-import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import thesis.vb.szt.server.dao.Dao;
-import thesis.vb.szt.server.entity.Contact;
 
 @Service
 @Transactional(readOnly = true)
-public class SecurityService implements UserDetailsService {
+public class SecurityService {
 
 	protected static Logger logger = Logger.getLogger("Security Service");
-//	
+	
+	@Autowired
 	Dao dao; 
-
-	public Dao getDao() {
-		return dao;
-	}
-
-	public void setDao(Dao dao) {
-		this.dao = dao;
-	}
-	
-	public int authenticate (String username, String password) {
-		
-		return -1;
-	}
 	
 	
-
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException, DataAccessException {
-		
-		logger.info("loadUserByUsername called for username: " + username);
-		UserDetails user = null;
-		
-		try {
-			Contact dbUser = dao.getContactByUsername(username);
-			user = new org.springframework.security.core.userdetails.User(
-					dbUser.getUsername(), 
-					dbUser.getPassword().toLowerCase(),
-					true,
-					true,
-					true,
-					true,
-					getAuthorities(dbUser.getRole()) );
-			logger.info(dbUser.getUsername() + " " + dbUser.getPassword().toLowerCase() + getAuthorities(dbUser.getRole()));
-		} catch (Exception e) {
-			logger.error("Error in retrieving user", e);
-		}
-		return user;
-	}
+//	public boolean encryptQueryStream(String password, Result queryResult, OutputStream outputSteram) {
+//		queryResult.
+//		
+//		return false;
+//	}
 	
-	/**
-	 * Retrieves the correct ROLE type depending on the access level, where access level is an Integer.
-	 * Basically, this interprets the access value whether it's for a regular user or admin.
-	 * 
-	 * @param access an integer value representing the access of the user
-	 * @return collection of granted authorities
-	 */
-	public Collection<GrantedAuthority> getAuthorities(Integer access)
+	public String encrypQuery(String query, SecretKey secret) throws Exception
 	{
+		Cipher cipher = Cipher.getInstance("AES"); // /CBC/PKCS5Padding
+		cipher.init(Cipher.ENCRYPT_MODE, secret);
 
-		List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>(2);
+		// byte[] iv =
+		// cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
+		String ciphertext = Base64.encodeBase64String(cipher.doFinal(query
+				.getBytes("UTF-8")));
 
-		/** All users are granted with ROLE_USER access */
-		logger.debug("Grant ROLE_USER to this user");
-		authList.add(new SimpleGrantedAuthority("ROLE_USER"));
+		// Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		// cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
 
-		/**
-		 * Check if this user has admin access We interpret Integer(1) as an
-		 * admin user
-		 */
-		if (access.compareTo(1) == 0)
-		{
-			logger.debug("Grant ROLE_ADMIN to this user");
-			authList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		}
-
-		return authList;
+		return ciphertext;
 	}
 	
+	public String decryptQuery(SecretKey secret, String encryptedPassword) throws Exception
+	{
+		Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+		cipher.init(Cipher.DECRYPT_MODE, secret);
+		String decryptedString = new String(cipher.doFinal(Base64.decodeBase64(encryptedPassword)));
+		
+		return decryptedString;
+	}
 }
