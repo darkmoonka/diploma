@@ -118,7 +118,7 @@ public class DataController
 		List<Map<String, String>> reportList = null;
 		try
 		{
-			reportList = dao.getReportsForAgent(mac);
+			reportList = dao.getReportsForAgent(mac, -1, -1);
 		} catch (Exception e)
 		{
 			logger.error("Unable to set reports", e);

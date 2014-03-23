@@ -200,52 +200,59 @@ public class Dao
 		}
 	}
 
+//	@SuppressWarnings("unchecked")
+//	public List<List<Map<String, String>>> getAllReports(int count)
+//	{
+//		List<List<Map<String, String>>> result = new ArrayList<List<Map<String, String>>>();
+//
+//		Set<String> tableNames = getTableNames();
+//
+//		for (String tableName : tableNames)
+//		{
+//			List<Map<String, String>> tableData = new ArrayList<Map<String, String>>();
+//
+//			String queryString = "SELECT * FROM " + tableName;
+//			Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
+//
+//			if (count > 0)
+//			{
+//				logger.info("Listing last " + count + " reports from " + tableName);
+//				q.setMaxResults(count);
+//			} else
+//			{
+//				logger.info("Listing reports from " + tableName);
+//			}
+//
+//			List<String> reportKeys = getReportAttributes(tableName);
+//			List<Object[]> table = (List<Object[]>) q.list();
+//
+//			for (int row = 0; row < table.size(); row++)
+//			{
+//				Map<String, String> reportInstance = new HashMap<String, String>();
+//				Object tableValues[] = table.get(row);
+//				int tableValuesLength = tableValues.length;
+//				for (int column = 0; column < tableValuesLength; column++)
+//				{
+//					String key = reportKeys.get(column);
+//					String value = tableValues[column].toString();
+//					reportInstance.put(key, value);
+//				}
+//				tableData.add(reportInstance);
+//			}
+//			result.add(tableData);
+//		}
+//		return result;
+//	}
+
+	/**
+	 * 
+	 * @param mac
+	 * @param from set to -1 to get all reports
+	 * @param limit set to -1 to get all reports
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
-	public List<List<Map<String, String>>> getAllReports(int count)
-	{
-		List<List<Map<String, String>>> result = new ArrayList<List<Map<String, String>>>();
-
-		Set<String> tableNames = getTableNames();
-
-		for (String tableName : tableNames)
-		{
-			List<Map<String, String>> tableData = new ArrayList<Map<String, String>>();
-
-			String queryString = "SELECT * FROM " + tableName;
-			Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
-
-			if (count > 0)
-			{
-				logger.info("Listing last " + count + " reports from " + tableName);
-				q.setMaxResults(count);
-			} else
-			{
-				logger.info("Listing reports from " + tableName);
-			}
-
-			List<String> reportKeys = getReportAttributes(tableName);
-			List<Object[]> table = (List<Object[]>) q.list();
-
-			for (int row = 0; row < table.size(); row++)
-			{
-				Map<String, String> reportInstance = new HashMap<String, String>();
-				Object tableValues[] = table.get(row);
-				int tableValuesLength = tableValues.length;
-				for (int column = 0; column < tableValuesLength; column++)
-				{
-					String key = reportKeys.get(column);
-					String value = tableValues[column].toString();
-					reportInstance.put(key, value);
-				}
-				tableData.add(reportInstance);
-			}
-			result.add(tableData);
-		}
-		return result;
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Map<String, String>> getReportsForAgent(String mac)
+	public List<Map<String, String>> getReportsForAgent(String mac, int from, int limit)
 	{
 		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 
@@ -255,7 +262,10 @@ public class Dao
 		String query = "SELECT * FROM " + tableName;
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
-
+		if(!(from == -1 && limit == -1)) {
+			q.setFirstResult(from).setMaxResults(limit);
+		}
+		
 		List<String> reportKeys = getReportAttributes(tableName);
 		List<Object[]> table = (List<Object[]>) q.list();
 
@@ -276,6 +286,13 @@ public class Dao
 		return result;
 	}
 
+	public int getReportCount(String mac) {
+		String tableName = TABLE_PREFIX + mac;
+		String query = "SELECT COUNT(*) FROM " + tableName;
+		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
+		return (Integer)q.uniqueResult();
+	}
+	
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
 		StringBuilder keyString = new StringBuilder(" (timestamp" + SQL_SEPARATOR + " ");

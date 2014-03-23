@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import thesis.vb.szt.server.dao.Dao;
 import thesis.vb.szt.server.entity.AgentSet;
 import thesis.vb.szt.server.entity.Contact;
 import thesis.vb.szt.server.entity.ReportList;
+import thesis.vb.szt.server.entity.ReportListRequest;
 import thesis.vb.szt.server.security.Keys;
 import thesis.vb.szt.server.security.SecurityService;
 
@@ -50,51 +53,51 @@ public class MobileController
 	public void test(HttpServletRequest request, HttpServletResponse response)
 	{
 		logger.info("Android test request");
-		try {
-			
-			ReportList reportList = null;
-			StringWriter sw = new StringWriter();
-			PrintWriter writer = null;
-			OutputStream responseStream = null;
-			String mac = "50_E5_49_4C_65_12";
-			try
-			{
-				reportList = new ReportList(dao.getReportsForAgent(mac));
-				logger.info("ReportList created:\n" + reportList.toString());
-			} catch (Exception e)
-			{
-				logger.error("Unable to get reports", e);
-				response.setStatus(HttpStatus.NOT_FOUND.value());
-				return;
-			}
-
-			//encrypt reportlist
-			try
-			{
-				String username = "asd";
-				Contact contact = fetchContact(username, response);
-				responseStream = response.getOutputStream();
-				
-				marshaller.marshal(reportList, new StreamResult(sw));
-				SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-				String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
-				
-				logger.info("Encrypted response is: " + encryptedResponse);
-				
-				writer = new PrintWriter(new OutputStreamWriter(responseStream));
-				writer.println(securityService.decryptQuery(key, encryptedResponse));
-				writer.flush();
-				response.setStatus(HttpStatus.OK.value());
-				
-				response.setStatus(HttpStatus.OK.value());
-			} catch (IOException e)
-			{
-				logger.error("Unable to marshal reports", e);
-				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			} 
-		} catch (Exception e) {
-			logger.error("", e);
-		}
+//		try {
+//			
+//			ReportList reportList = null;
+//			StringWriter sw = new StringWriter();
+//			PrintWriter writer = null;
+//			OutputStream responseStream = null;
+//			String mac = "50_E5_49_4C_65_12";
+//			try
+//			{
+//				reportList = new ReportList(dao.getReportsForAgent(mac));
+//				logger.info("ReportList created:\n" + reportList.toString());
+//			} catch (Exception e)
+//			{
+//				logger.error("Unable to get reports", e);
+//				response.setStatus(HttpStatus.NOT_FOUND.value());
+//				return;
+//			}
+//
+//			//encrypt reportlist
+//			try
+//			{
+//				String username = "asd";
+//				Contact contact = fetchContact(username, response);
+//				responseStream = response.getOutputStream();
+//				
+//				marshaller.marshal(reportList, new StreamResult(sw));
+//				SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
+//				String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
+//				
+//				logger.info("Encrypted response is: " + encryptedResponse);
+//				
+//				writer = new PrintWriter(new OutputStreamWriter(responseStream));
+//				writer.println(securityService.decryptQuery(key, encryptedResponse));
+//				writer.flush();
+//				response.setStatus(HttpStatus.OK.value());
+//				
+//				response.setStatus(HttpStatus.OK.value());
+//			} catch (IOException e)
+//			{
+//				logger.error("Unable to marshal reports", e);
+//				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+//			} 
+//		} catch (Exception e) {
+//			logger.error("", e);
+//		}
 	}
 
 	
@@ -122,42 +125,6 @@ public class MobileController
 //			return null;
 //		} 
 //	}
-	
-	
-	// @RequestMapping(value = "/getAgents", method = RequestMethod.GET)
-		// public void getAgents(HttpServletRequest request, HttpServletResponse
-		// response) {
-		// logger.info("Recieved request to login from mobile client");
-		//
-		// OutputStream responseStream = null;
-		//
-		// try {
-		// Contact contact = fetchContact(request, response);
-		// if(contact == null) {
-		// return;
-		// }
-		// AgentSet agentSet = new AgentSet(contact.getAgents());
-		//
-		// responseStream = response.getOutputStream();
-		// marshaller.marshal(agentSet, new StreamResult(responseStream));
-		//
-		// response.setStatus(HttpStatus.OK.value());
-		// } catch (Exception e) {
-		// logger.error("Unable to get agents for " +
-		// request.getParameter("username"), e);
-		// response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		// } finally {
-		// if (responseStream != null) {
-		// try
-		// {
-		// responseStream.close();
-		// } catch (IOException e)
-		// {
-		// logger.error("Unable to close http response stream", e);
-		// }
-		// }
-		// }
-		// }
 	
 	@RequestMapping(value = "/getAgents", method = RequestMethod.GET)
 	public void getAgents(HttpServletRequest request, HttpServletResponse response)
@@ -220,12 +187,10 @@ public class MobileController
 		}
 	}
 	
-	@RequestMapping(value = "/agent/{mac}", method = RequestMethod.GET)
-	public void getAgent(@PathVariable String mac, HttpServletRequest request,
-			HttpServletResponse response)
+	@RequestMapping(value = "/getAgent", method = RequestMethod.GET)
+	public void getAgent(HttpServletRequest request, HttpServletResponse response)
 	{
-		logger.info("Recieved request to get agent with mac \"" + mac
-				+ "\" from mobile client");
+		logger.info("Recieved request to get agent from mobile client");
 
 		final String username = request.getParameter("username");
 		final String encryptedQuery = request.getParameter("encryptedQuery");
@@ -254,14 +219,17 @@ public class MobileController
 			SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
 			//Decrypted sting is the mac address
 			String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
+			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
 			
-			if (validateContact(contact, decryptedQuery, response))
+			
+			if (validateContact(contact, reportListRequest.getMac(), response))
 			{
 				ReportList reportList = null;
 				//get reportlist
 				try
 				{
-					reportList = new ReportList(dao.getReportsForAgent(mac));
+					reportList = new ReportList(dao.getReportsForAgent(reportListRequest.getMac(), reportListRequest.getFrom(), reportListRequest.getLimit()));
+					reportList.setCount(dao.getReportCount(reportListRequest.getMac()));
 					logger.info("ReportList created:\n" + reportList.toString());
 				} catch (Exception e)
 				{
