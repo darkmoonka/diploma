@@ -181,9 +181,9 @@ public class Keys
 
 	public static SecretKey generateSymmetricKeyForMobiles(String password) throws Exception
 	{
-		// TODO a kapott jelszót 16,24,32 bájtosra kell konvertálni
+		// TODO a kapott jelszót 16 bájtosra kell konvertálni, iOSen csak így generalja ugyanazt, egyébként lehetne 16,24, vagy 32 byte
 		// TODO a jelszó hasheket kéne ilyen hosszúra konstruálni
-		SecretKeySpec secretKey = new SecretKeySpec("f10e2821bbbea527ea02200352313bc0".getBytes("UTF-8"),
+		SecretKeySpec secretKey = new SecretKeySpec("f10e2821bbbea527".getBytes("UTF-8"),
 				"AES");
 
 		return secretKey;
