@@ -10,16 +10,12 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
@@ -183,16 +179,26 @@ public class Keys
 		return keyGenerator.generateKey();
 	}
 
-	public static SecretKey generatySymmetricKeyFromPassword(String password)
-			throws NoSuchAlgorithmException, InvalidKeySpecException
+	public static SecretKey generateSymmetricKeyForMobiles(String password) throws Exception
 	{
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-		KeySpec spec = new PBEKeySpec(password.toCharArray(), password.getBytes(), 65536, 128);
-		SecretKey tmp = factory.generateSecret(spec);
-		SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");
+		// TODO a kapott jelszót 16,24,32 bájtosra kell konvertálni
+		// TODO a jelszó hasheket kéne ilyen hosszúra konstruálni
+		SecretKeySpec secretKey = new SecretKeySpec("f10e2821bbbea527ea02200352313bc0".getBytes("UTF-8"),
+				"AES");
 
-		return secret;
+		return secretKey;
 	}
 
+	/*
+	 * public static SecretKey generatySymmetricKeyFromPassword(String password)
+	 * throws NoSuchAlgorithmException, InvalidKeySpecException {
+	 * SecretKeyFactory factory =
+	 * SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1"); KeySpec spec = new
+	 * PBEKeySpec(password.toCharArray(), password.getBytes(), 65536, 128);
+	 * SecretKey tmp = factory.generateSecret(spec); SecretKey secret = new
+	 * SecretKeySpec(tmp.getEncoded(), "AES");
+	 * 
+	 * return secret; }
+	 */
 
 }

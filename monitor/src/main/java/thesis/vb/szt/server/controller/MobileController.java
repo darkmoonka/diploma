@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -53,79 +52,111 @@ public class MobileController
 	public void test(HttpServletRequest request, HttpServletResponse response)
 	{
 		logger.info("Android test request");
-//		try {
-//			
-//			ReportList reportList = null;
-//			StringWriter sw = new StringWriter();
-//			PrintWriter writer = null;
-//			OutputStream responseStream = null;
-//			String mac = "50_E5_49_4C_65_12";
-//			try
-//			{
-//				reportList = new ReportList(dao.getReportsForAgent(mac));
-//				logger.info("ReportList created:\n" + reportList.toString());
-//			} catch (Exception e)
-//			{
-//				logger.error("Unable to get reports", e);
-//				response.setStatus(HttpStatus.NOT_FOUND.value());
-//				return;
-//			}
-//
-//			//encrypt reportlist
-//			try
-//			{
-//				String username = "asd";
-//				Contact contact = fetchContact(username, response);
-//				responseStream = response.getOutputStream();
-//				
-//				marshaller.marshal(reportList, new StreamResult(sw));
-//				SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-//				String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
-//				
-//				logger.info("Encrypted response is: " + encryptedResponse);
-//				
-//				writer = new PrintWriter(new OutputStreamWriter(responseStream));
-//				writer.println(securityService.decryptQuery(key, encryptedResponse));
-//				writer.flush();
-//				response.setStatus(HttpStatus.OK.value());
-//				
-//				response.setStatus(HttpStatus.OK.value());
-//			} catch (IOException e)
-//			{
-//				logger.error("Unable to marshal reports", e);
-//				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//			} 
-//		} catch (Exception e) {
-//			logger.error("", e);
-//		}
-	}
+		try
+		{
+			SecretKey key = Keys.generateSymmetricKeyForMobiles("userpasswordhash");
+			String encryptedResponse = securityService.encrypQuery("asd", key);
+			logger.info("encrypted: " + encryptedResponse);
+			String decrypted = securityService.decryptQuery(key, encryptedResponse);
+			logger.info("encrypted: " + decrypted);
+			
+			
+		} catch (Exception e)
+		{
+			logger.error("", e);
+		}
 
-	
-
-//	private String decryptAspect (HttpServletRequest request, HttpServletResponse response) {
-//		logger.info("Recieved request to login from mobile client");
-//
-//		final String username = request.getParameter("username");
-//		final String encryptedQuery = request.getParameter("encryptedQuery");
 //		try
 //		{
-//			Contact contact = fetchContact(username, response);
-//			if (contact != null)
-//			{
-//				SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-//				return securityService.decryptQuery(key, encryptedQuery);
-//			} else {
-//				
-//				return null;
-//			}
+//			SecretKeySpec secretKey = new SecretKeySpec("almafaszalmafasz".getBytes("UTF-8"), "AES");
+//			final byte[] iv = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+//					0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+//			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//			cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
+//			byte[] result = cipher.doFinal("alma".getBytes("UTF-8"));
+//			String encrypted = Base64.encodeBase64String(result);
+//			logger.info("encrypted: " + encrypted);
 //		} catch (Exception e)
 //		{
-//			logger.error("Invalid agent username " + request.getParameter("username"), e);
-//			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-//			return null;
-//		} 
-//	}
-	
+//			throw new RuntimeException("Encrypt using AES failed. " + e.getMessage());
+//		}
+
+		// try {
+		//
+		// ReportList reportList = null;
+		// StringWriter sw = new StringWriter();
+		// PrintWriter writer = null;
+		// OutputStream responseStream = null;
+		// String mac = "50_E5_49_4C_65_12";
+		// try
+		// {
+		// reportList = new ReportList(dao.getReportsForAgent(mac));
+		// logger.info("ReportList created:\n" + reportList.toString());
+		// } catch (Exception e)
+		// {
+		// logger.error("Unable to get reports", e);
+		// response.setStatus(HttpStatus.NOT_FOUND.value());
+		// return;
+		// }
+		//
+		// //encrypt reportlist
+		// try
+		// {
+		// String username = "asd";
+		// Contact contact = fetchContact(username, response);
+		// responseStream = response.getOutputStream();
+		//
+		// marshaller.marshal(reportList, new StreamResult(sw));
+		// SecretKey key =
+		// Keys.generatySymmetricKeyFromPassword(contact.getPassword());
+		// String encryptedResponse = securityService.encrypQuery(sw.toString(),
+		// key);
+		//
+		// logger.info("Encrypted response is: " + encryptedResponse);
+		//
+		// writer = new PrintWriter(new OutputStreamWriter(responseStream));
+		// writer.println(securityService.decryptQuery(key, encryptedResponse));
+		// writer.flush();
+		// response.setStatus(HttpStatus.OK.value());
+		//
+		// response.setStatus(HttpStatus.OK.value());
+		// } catch (IOException e)
+		// {
+		// logger.error("Unable to marshal reports", e);
+		// response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+		// }
+		// } catch (Exception e) {
+		// logger.error("", e);
+		// }
+	}
+
+	// private String decryptAspect (HttpServletRequest request,
+	// HttpServletResponse response) {
+	// logger.info("Recieved request to login from mobile client");
+	//
+	// final String username = request.getParameter("username");
+	// final String encryptedQuery = request.getParameter("encryptedQuery");
+	// try
+	// {
+	// Contact contact = fetchContact(username, response);
+	// if (contact != null)
+	// {
+	// SecretKey key =
+	// Keys.generatySymmetricKeyFromPassword(contact.getPassword());
+	// return securityService.decryptQuery(key, encryptedQuery);
+	// } else {
+	//
+	// return null;
+	// }
+	// } catch (Exception e)
+	// {
+	// logger.error("Invalid agent username " +
+	// request.getParameter("username"), e);
+	// response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	// return null;
+	// }
+	// }
+
 	@RequestMapping(value = "/getAgents", method = RequestMethod.GET)
 	public void getAgents(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -143,20 +174,21 @@ public class MobileController
 			Contact contact = fetchContact(username, response);
 			if (contact != null)
 			{
-				SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
+				SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
 				String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
 
 				if (validateContact(contact, decryptedQuery, response))
 				{
 					responseStream = response.getOutputStream();
-					
+
 					AgentSet agentSet = new AgentSet(contact.getAgents());
-					
-					marshaller.marshal(agentSet, new StreamResult(sw)); //new StreamResult(responseStream));
+
+					marshaller.marshal(agentSet, new StreamResult(sw)); // new
+																		// StreamResult(responseStream));
 					String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
-					
+
 					logger.info("Encrypted response is: " + encryptedResponse);
-					
+
 					writer = new PrintWriter(new OutputStreamWriter(responseStream));
 					writer.println(encryptedResponse);
 					writer.flush();
@@ -173,10 +205,12 @@ public class MobileController
 			{
 				try
 				{
-					if(sw != null ) {
+					if (sw != null)
+					{
 						sw.close();
 					}
-					if(writer != null) {
+					if (writer != null)
+					{
 						writer.close();
 					}
 				} catch (IOException e)
@@ -186,7 +220,7 @@ public class MobileController
 			}
 		}
 	}
-	
+
 	@RequestMapping(value = "/getAgent", method = RequestMethod.GET)
 	public void getAgent(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -194,17 +228,17 @@ public class MobileController
 
 		final String username = request.getParameter("username");
 		final String encryptedQuery = request.getParameter("encryptedQuery");
-		
+
 		StringWriter sw = null;
 		PrintWriter writer = null;
 		OutputStream responseStream = null;
-		
+
 		try
 		{
 			sw = new StringWriter();
 			Contact contact = null;
-			
-			//get contact
+
+			// get contact
 			try
 			{
 				contact = fetchContact(username, response);
@@ -215,20 +249,22 @@ public class MobileController
 				logger.error("Unable to fetch contact " + username, e);
 				return;
 			}
-			
-			SecretKey key = Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-			//Decrypted sting is the mac address
+
+			SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
+			// Decrypted sting is the mac address
 			String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
-			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
-			
-			
+			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller
+					.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
+
 			if (validateContact(contact, reportListRequest.getMac(), response))
 			{
 				ReportList reportList = null;
-				//get reportlist
+				// get reportlist
 				try
 				{
-					reportList = new ReportList(dao.getReportsForAgent(reportListRequest.getMac(), reportListRequest.getFrom(), reportListRequest.getLimit()));
+					reportList = new ReportList(dao.getReportsForAgent(
+							reportListRequest.getMac(), reportListRequest.getFrom(),
+							reportListRequest.getLimit()));
 					reportList.setCount(dao.getReportCount(reportListRequest.getMac()));
 					logger.info("ReportList created:\n" + reportList.toString());
 				} catch (Exception e)
@@ -237,40 +273,44 @@ public class MobileController
 					response.setStatus(HttpStatus.NOT_FOUND.value());
 					return;
 				}
-	
-				//encrypt reportlist
+
+				// encrypt reportlist
 				try
 				{
 					responseStream = response.getOutputStream();
-					
+
 					marshaller.marshal(reportList, new StreamResult(sw));
 					String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
-					
+
 					logger.info("Encrypted response is: " + encryptedResponse);
-					
+
 					writer = new PrintWriter(new OutputStreamWriter(responseStream));
 					writer.println(encryptedResponse);
 					writer.flush();
 					response.setStatus(HttpStatus.OK.value());
-					
+
 					response.setStatus(HttpStatus.OK.value());
 				} catch (IOException e)
 				{
 					logger.error("Unable to marshal reports", e);
 					response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-				} 
+				}
 			}
-		} catch (Exception e) {
+		} catch (Exception e)
+		{
 			logger.error("Unable to get reports for " + username, e);
-		} finally {
+		} finally
+		{
 			if (responseStream != null)
 			{
 				try
 				{
-					if(sw != null ) {
+					if (sw != null)
+					{
 						sw.close();
 					}
-					if(writer != null) {
+					if (writer != null)
+					{
 						writer.close();
 					}
 				} catch (IOException e)
@@ -280,7 +320,9 @@ public class MobileController
 			}
 		}
 	}
-	/** Handles response status (with NOT FOUND in case of error)
+
+	/**
+	 * Handles response status (with NOT FOUND in case of error)
 	 * 
 	 * @param username
 	 * @param response
