@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URLDecoder;
 
 import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
@@ -163,13 +164,19 @@ public class MobileController
 		logger.info("Recieved request to login from mobile client");
 
 		OutputStream responseStream = null;
-
-		final String username = request.getParameter("username");
-		final String encryptedQuery = request.getParameter("encryptedQuery");
 		StringWriter sw = null;
 		PrintWriter writer = null;
 		try
 		{
+			final String username = request.getParameter("username");
+			final String encryptedQuery = URLDecoder.decode(request.getParameter("encryptedQuery"), "utf-8");
+			
+			if(username == null || encryptedQuery == null ||
+					"".equals(username) || "".equals(encryptedQuery)) {
+				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
+				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
+				return;
+			}
 			sw = new StringWriter();
 			Contact contact = fetchContact(username, response);
 			if (contact != null)
@@ -235,6 +242,13 @@ public class MobileController
 
 		try
 		{
+			if(username == null || encryptedQuery == null ||
+					"".equals(username) || "".equals(encryptedQuery)) {
+				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
+				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
+				return;
+			}
+			
 			sw = new StringWriter();
 			Contact contact = null;
 
