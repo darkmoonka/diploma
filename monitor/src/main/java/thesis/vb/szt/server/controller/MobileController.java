@@ -56,7 +56,7 @@ public class MobileController
 		try
 		{
 			SecretKey key = Keys.generateSymmetricKeyForMobiles("userpasswordhash");
-			String encryptedResponse = securityService.encrypQuery("asd", key);
+			String encryptedResponse = securityService.encrypQuery("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><agentSet><agent><id>4</id><address>50_E5_49_4C_65_11</address><name>Dummy</name></agent><agent><id>3</id><address>50_E5_49_4C_65_12</address><name>RemoteAlma</name></agent></agentSet>", key);
 			logger.info("encrypted: " + encryptedResponse);
 			String decrypted = securityService.decryptQuery(key, encryptedResponse);
 			logger.info("encrypted: " + decrypted);
@@ -184,7 +184,7 @@ public class MobileController
 				SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
 				String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
 
-				if (validateContact(contact, decryptedQuery, response))
+				//if (validateContact(contact, decryptedQuery, response))
 				{
 					responseStream = response.getOutputStream();
 
@@ -192,9 +192,14 @@ public class MobileController
 
 					marshaller.marshal(agentSet, new StreamResult(sw)); // new
 																		// StreamResult(responseStream));
+					
+					logger.info(sw.toString());
+					logger.info("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><agentSet><agent><id>4</id><address>50_E5_49_4C_65_11</address><name>Dummy</name></agent><agent><id>3</id><address>50_E5_49_4C_65_12</address><name>RemoteAlma</name></agent></agentSet>");
+					
 					String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
 
 					logger.info("Encrypted response is: " + encryptedResponse);
+					logger.info("plain response is: " + securityService.decryptQuery(key, encryptedResponse));
 
 					writer = new PrintWriter(new OutputStreamWriter(responseStream));
 					writer.println(encryptedResponse);
