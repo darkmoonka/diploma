@@ -1,5 +1,6 @@
 package thesis.vb.szt.server.dao;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -290,7 +291,9 @@ public class Dao
 		String tableName = TABLE_PREFIX + mac;
 		String query = "SELECT COUNT(*) FROM " + tableName;
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
-		return (Integer)q.uniqueResult();
+		BigInteger tmp = (BigInteger) q.uniqueResult();
+		
+		return tmp.intValue();
 	}
 	
 	public boolean insertReport(Map<String, String> report, String mac)

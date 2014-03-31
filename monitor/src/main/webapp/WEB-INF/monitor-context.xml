@@ -63,6 +63,7 @@
 				<value>thesis.vb.szt.server.entity.AgentSet</value>
 				<value>thesis.vb.szt.server.entity.ReportList</value>
 				<value>thesis.vb.szt.server.entity.ReportMap</value>
+				<value>thesis.vb.szt.server.entity.ReportListRequest</value>
 			</list>
 		</property>
 	</bean>

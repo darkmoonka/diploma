@@ -61,12 +61,10 @@ public class MobileController
 			String decrypted = securityService.decryptQuery(key, encryptedResponse);
 			logger.info("encrypted: " + decrypted);
 			
-			
 		} catch (Exception e)
 		{
 			logger.error("", e);
 		}
-
 //		try
 //		{
 //			SecretKeySpec secretKey = new SecretKeySpec("almafaszalmafasz".getBytes("UTF-8"), "AES");
@@ -81,7 +79,6 @@ public class MobileController
 //		{
 //			throw new RuntimeException("Encrypt using AES failed. " + e.getMessage());
 //		}
-
 		// try {
 		//
 		// ReportList reportList = null;
@@ -268,14 +265,23 @@ public class MobileController
 				logger.error("Unable to fetch contact " + username, e);
 				return;
 			}
-
 			SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
+			
+			// test:
+//			ReportListRequest reportListRequestTest = new ReportListRequest();
+//			reportListRequestTest.setFrom(0);
+//			reportListRequestTest.setLimit(20);
+//			reportListRequestTest.setMac("50_E5_49_4C_65_12");
+//			marshaller.marshal(reportListRequestTest, new StreamResult(sw));
+//			logger.info("testlist: " + sw.toString());
+//			logger.info("test: " + securityService.encrypQuery("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><request><mac>50_E5_49_4C_65_12</mac><from>0</from><limit>20</limit></request>", key));
+			
 			// Decrypted sting is the mac address
 			String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
 			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller
 					.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
 
-			if (validateContact(contact, reportListRequest.getMac(), response))
+//			if (validateContact(contact, reportListRequest.getMac(), response))
 			{
 				ReportList reportList = null;
 				// get reportlist
