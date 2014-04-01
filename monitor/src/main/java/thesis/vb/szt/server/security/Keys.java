@@ -173,17 +173,22 @@ public class Keys
 		return decryptedString;
 	}
 
-	public static SecretKey generateSymmetricKey() throws NoSuchAlgorithmException
+	public static SecretKey generateSymmetricKeyForAgent() throws NoSuchAlgorithmException
 	{
 		KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
 		return keyGenerator.generateKey();
 	}
 
+	/** Password is reduced to 16 bytes. 
+	 * 
+	 * @param password SHA-1 hashed password
+	 * @return AES key (ECB cipher with PKCS5Padding)
+	 * @throws Exception
+	 */
 	public static SecretKey generateSymmetricKeyForMobiles(String password) throws Exception
-	{
-		// TODO a kapott jelszót 16 bájtosra kell konvertálni, iOSen csak így generalja ugyanazt, egyébként lehetne 16,24, vagy 32 byte
-		// TODO a jelszó hasheket kéne ilyen hosszúra konstruálni
-		SecretKeySpec secretKey = new SecretKeySpec("f10e2821bbbea527".getBytes("UTF-8"),
+	{		
+		//TODO delete  A beégetett: f10e2821bbbea527
+		SecretKeySpec secretKey = new SecretKeySpec(password.substring(0, 16).getBytes("UTF-8"),
 				"AES");
 
 		return secretKey;

@@ -317,7 +317,7 @@ public class DataController
 			Agent agent = dao.getAgentByAddress(macAddress);
 			byte[] agentPublicKey = publicKey.getBytes();
 
-			SecretKey aesKey = Keys.generateSymmetricKey();
+			SecretKey aesKey = Keys.generateSymmetricKeyForAgent();
 
 			if (agent == null)
 			{
