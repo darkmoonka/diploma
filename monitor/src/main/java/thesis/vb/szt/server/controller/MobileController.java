@@ -166,8 +166,8 @@ public class MobileController
 		try
 		{
 			final String username = request.getParameter("username");
-			final String encryptedQuery = URLDecoder.decode(request.getParameter("encryptedQuery"), "utf-8");
-			
+			final String encryptedQuery = request.getParameter("encryptedQuery"); //URLDecoder.decode(request.getParameter("encryptedQuery"), "utf-8");
+
 			if(username == null || encryptedQuery == null ||
 					"".equals(username) || "".equals(encryptedQuery)) {
 				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
@@ -187,8 +187,7 @@ public class MobileController
 
 					AgentSet agentSet = new AgentSet(contact.getAgents());
 
-					marshaller.marshal(agentSet, new StreamResult(sw)); // new
-																		// StreamResult(responseStream));
+					marshaller.marshal(agentSet, new StreamResult(sw)); 
 					
 					logger.info(sw.toString());
 					logger.info("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><agentSet><agent><id>4</id><address>50_E5_49_4C_65_11</address><name>Dummy</name></agent><agent><id>3</id><address>50_E5_49_4C_65_12</address><name>RemoteAlma</name></agent></agentSet>");
