@@ -65,96 +65,13 @@ public class MobileController
 		{
 			logger.error("", e);
 		}
-//		try
-//		{
-//			SecretKeySpec secretKey = new SecretKeySpec("almafaszalmafasz".getBytes("UTF-8"), "AES");
-//			final byte[] iv = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-//					0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-//			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-//			cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(iv));
-//			byte[] result = cipher.doFinal("alma".getBytes("UTF-8"));
-//			String encrypted = Base64.encodeBase64String(result);
-//			logger.info("encrypted: " + encrypted);
-//		} catch (Exception e)
-//		{
-//			throw new RuntimeException("Encrypt using AES failed. " + e.getMessage());
-//		}
-		// try {
-		//
-		// ReportList reportList = null;
-		// StringWriter sw = new StringWriter();
-		// PrintWriter writer = null;
-		// OutputStream responseStream = null;
-		// String mac = "50_E5_49_4C_65_12";
-		// try
-		// {
-		// reportList = new ReportList(dao.getReportsForAgent(mac));
-		// logger.info("ReportList created:\n" + reportList.toString());
-		// } catch (Exception e)
-		// {
-		// logger.error("Unable to get reports", e);
-		// response.setStatus(HttpStatus.NOT_FOUND.value());
-		// return;
-		// }
-		//
-		// //encrypt reportlist
-		// try
-		// {
-		// String username = "asd";
-		// Contact contact = fetchContact(username, response);
-		// responseStream = response.getOutputStream();
-		//
-		// marshaller.marshal(reportList, new StreamResult(sw));
-		// SecretKey key =
-		// Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-		// String encryptedResponse = securityService.encrypQuery(sw.toString(),
-		// key);
-		//
-		// logger.info("Encrypted response is: " + encryptedResponse);
-		//
-		// writer = new PrintWriter(new OutputStreamWriter(responseStream));
-		// writer.println(securityService.decryptQuery(key, encryptedResponse));
-		// writer.flush();
-		// response.setStatus(HttpStatus.OK.value());
-		//
-		// response.setStatus(HttpStatus.OK.value());
-		// } catch (IOException e)
-		// {
-		// logger.error("Unable to marshal reports", e);
-		// response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		// }
-		// } catch (Exception e) {
-		// logger.error("", e);
-		// }
 	}
 
-	// private String decryptAspect (HttpServletRequest request,
-	// HttpServletResponse response) {
-	// logger.info("Recieved request to login from mobile client");
-	//
-	// final String username = request.getParameter("username");
-	// final String encryptedQuery = request.getParameter("encryptedQuery");
-	// try
-	// {
-	// Contact contact = fetchContact(username, response);
-	// if (contact != null)
-	// {
-	// SecretKey key =
-	// Keys.generatySymmetricKeyFromPassword(contact.getPassword());
-	// return securityService.decryptQuery(key, encryptedQuery);
-	// } else {
-	//
-	// return null;
-	// }
-	// } catch (Exception e)
-	// {
-	// logger.error("Invalid agent username " +
-	// request.getParameter("username"), e);
-	// response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-	// return null;
-	// }
-	// }
-
+	/** Get agents for a given contact. Fetches agents based on username
+	 * 
+	 * @param request
+	 * @param response
+	 */
 	@RequestMapping(value = "/getAgents", method = RequestMethod.GET)
 	public void getAgents(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -166,22 +83,22 @@ public class MobileController
 		try
 		{
 			final String username = request.getParameter("username");
-			final String encryptedQuery = request.getParameter("encryptedQuery"); //URLDecoder.decode(request.getParameter("encryptedQuery"), "utf-8");
+			//DO NOT USE only here for reference
+//			final String encryptedQuery = request.getParameter("encryptedQuery"); //URLDecoder.decode(request.getParameter("encryptedQuery"), "utf-8");
 
-			if(username == null || encryptedQuery == null ||
-					"".equals(username) || "".equals(encryptedQuery)) {
-				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
-				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
-				return;
-			}
+//			if(username == null || encryptedQuery == null ||
+//					"".equals(username) || "".equals(encryptedQuery)) {
+//				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
+//				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
+//				return;
+//			}
 			sw = new StringWriter();
 			Contact contact = fetchContact(username, response);
 			if (contact != null)
 			{
-				SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
-				String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
+				final SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
+//				String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
 
-				//if (validateContact(contact, decryptedQuery, response))
 				{
 					responseStream = response.getOutputStream();
 
@@ -189,13 +106,10 @@ public class MobileController
 
 					marshaller.marshal(agentSet, new StreamResult(sw)); 
 					
-					logger.info(sw.toString());
-					logger.info("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><agentSet><agent><id>4</id><address>50_E5_49_4C_65_11</address><name>Dummy</name></agent><agent><id>3</id><address>50_E5_49_4C_65_12</address><name>RemoteAlma</name></agent></agentSet>");
-					
 					String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
 
-					logger.info("Encrypted response is: " + encryptedResponse);
-					logger.info("plain response is: " + securityService.decryptQuery(key, encryptedResponse));
+//					logger.info("Encrypted response is: " + encryptedResponse);
+//					logger.info("plain response is: " + decryptedQuery);
 
 					writer = new PrintWriter(new OutputStreamWriter(responseStream));
 					writer.println(encryptedResponse);
@@ -266,21 +180,11 @@ public class MobileController
 			}
 			SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
 			
-			// test:
-//			ReportListRequest reportListRequestTest = new ReportListRequest();
-//			reportListRequestTest.setFrom(0);
-//			reportListRequestTest.setLimit(20);
-//			reportListRequestTest.setMac("50_E5_49_4C_65_12");
-//			marshaller.marshal(reportListRequestTest, new StreamResult(sw));
-//			logger.info("testlist: " + sw.toString());
-//			logger.info("test: " + securityService.encrypQuery("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><request><mac>50_E5_49_4C_65_12</mac><from>0</from><limit>20</limit></request>", key));
-			
 			// Decrypted sting is the mac address
 			String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
 			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller
 					.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
 
-//			if (validateContact(contact, reportListRequest.getMac(), response))
 			{
 				ReportList reportList = null;
 				// get reportlist
@@ -294,7 +198,7 @@ public class MobileController
 				} catch (Exception e)
 				{
 					logger.error("Unable to get reports", e);
-					response.setStatus(HttpStatus.NOT_FOUND.value());
+					response.setStatus(HttpStatus.BAD_REQUEST.value());
 					return;
 				}
 
@@ -368,28 +272,17 @@ public class MobileController
 		return contact;
 	}
 
-	private boolean validateContact(Contact contact, String password,
-			HttpServletResponse response) throws IOException
-	{
-		if (!contact.getPassword().equals(password))
-		{
-			logger.error("Invalid password");
-			response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid password");
-			return false;
-		} else
-		{
-			return true;
-		}
-	}
-
-	// public SecurityService getSecurityService()
-	// {
-	// return securityService;
-	// }
-	//
-	// public void setSecurityService(SecurityService securityService)
-	// {
-	// this.securityService = securityService;
-	// }
-
+//	private boolean validateContact(Contact contact, String password,
+//			HttpServletResponse response) throws IOException
+//	{
+//		if (!contact.getPassword().equals(password))
+//		{
+//			logger.error("Invalid password");
+//			response.sendError(HttpStatus.UNAUTHORIZED.value(), "Invalid password");
+//			return false;
+//		} else
+//		{
+//			return true;
+//		}
+//	}
 }

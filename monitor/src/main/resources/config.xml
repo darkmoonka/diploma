@@ -9,5 +9,9 @@
 			<Name>Szakály Tibor</Name>
 			<Email>szakaly.tibi@gmail.com</Email>
 		</Admin>
+		<Admin>
+			<Name>Válóczy Bálint</Name>
+			<Email>valoczy.balint@gmail.com</Email>
+		</Admin>
 	</Admins>
 </Settings>

@@ -12,7 +12,7 @@
 	<Agent>
 		<idFile>agentId.txt</idFile>
 		<repeatPeriod>2000</repeatPeriod>
-		<Name>RemoteAlma</Name>
+		<Name>BazintPC</Name>
 	</Agent>
 	<Features>
 		<Os>true</Os>
@@ -24,8 +24,7 @@
 	</Features>
 	<Contacts>
 		<Contact>
-			<Name>Pista</Name>
-			<Email>valoczy.balint@gmail.com</Email>
+			<Username>bazint</Username>
 		</Contact>
 	</Contacts>
 </Settings>

@@ -101,21 +101,21 @@ public class Dao
 		return result;
 	}
 
-	public Contact getContactByEmail(String email)
-	{
-		try
-		{
-			final String queryString = "SELECT c FROM Contact c " + "WHERE c.email = :email";
-			Contact contact = (Contact) sessionFactory.getCurrentSession()
-					.createQuery(queryString).setString("email", email).uniqueResult();
-			return contact;
-		} catch (Exception e)
-		{
-			logger.error("Unable to get contact by email: " + email);
-			return null;
-		}
-	}
-
+//	public Contact getContactByEmail(String email)
+//	{
+//		try
+//		{
+//			final String queryString = "SELECT c FROM Contact c " + "WHERE c.email = :email";
+//			Contact contact = (Contact) sessionFactory.getCurrentSession()
+//					.createQuery(queryString).setString("email", email).uniqueResult();
+//			return contact;
+//		} catch (Exception e)
+//		{
+//			logger.error("Unable to get contact by email: " + email);
+//			return null;
+//		}
+//	}
+	
 	public Contact getContactById(int id)
 	{
 		try
@@ -259,7 +259,7 @@ public class Dao
 
 		// Set<String> tableNames = getTableNames();
 
-		String tableName = TABLE_PREFIX + mac;
+		String tableName = TABLE_PREFIX + mac.toLowerCase();
 		String query = "SELECT * FROM " + tableName;
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
@@ -451,20 +451,25 @@ public class Dao
 	// return null;
 	// }
 
-	public boolean updateContact(String username, String password, String email)
+	public boolean createContact(String name, String username, String password, String email, String phone)
 	{
 		try
 		{
-			Contact contact = getContactByEmail(email);
+			Contact contact = new Contact();
+			contact.setName(name);
 			contact.setUsername(username);
 			contact.setPassword(password);
+			contact.setPhoneNumber(phone);
+			contact.setEmail(email);
+			
+			sessionFactory.getCurrentSession().persist(contact);
 
-			sessionFactory.getCurrentSession().flush();
-			logger.info("Successfully updated contact: " + username);
+//			sessionFactory.getCurrentSession().flush();
+			logger.info("Successfully created contact: " + username);
 			return true;
 		} catch (Exception e)
 		{
-			logger.error("Unable to update contact with email: " + email, e);
+			logger.error("Error during creating user with username: " + username, e);
 			return false;
 		}
 	}

@@ -101,18 +101,15 @@ public class Main
 
 			String agentName = configer.getString("Agent.Name");
 
-			List<Object> contactNames = configer
-					.getList("Contacts.Contact.Name");
-			List<Object> contactEmails = configer
-					.getList("Contacts.Contact.Email");
+			List<Object> contactUsernames = configer
+					.getList("Contacts.Contact.Username");
 
 			Set<Contact> contacts = new HashSet<Contact>();
-			if (contactNames != null && !contactNames.isEmpty()
-					&& contactEmails != null && !contactEmails.isEmpty())
+			if (contactUsernames != null && !contactUsernames.isEmpty())
 			{
-				for (int i = 0; i < contactNames.size(); i++)
-					contacts.add(new Contact(contactNames.get(i).toString(),
-							contactEmails.get(i).toString()));
+				for (int i = 0; i < contactUsernames.size(); i++)
+					contacts.add(new Contact(contactUsernames
+									.get(i).toString()));
 			}
 
 			String agentIdFile = configer.getString("Agent.idFile");
@@ -126,8 +123,10 @@ public class Main
 						url + "/monitor/registerAgent", keyPair.getPublic()
 								.getEncoded(), agentName, monitoredFeatures,
 						new Contacts(contacts));
-
-				IO.saveAgentId(agentId);
+				if(agentId == -1)
+					return;
+				else
+					IO.saveAgentId(agentId);
 			} else
 			{
 				agentId = IO.loadAgentId();
@@ -171,7 +170,7 @@ public class Main
 
 				}
 				isEnabled = configer.getBoolean("Features.Network");
-				if(isEnabled)
+				if (isEnabled)
 				{
 					Network network = new Network(sigar);
 					items.add(network);

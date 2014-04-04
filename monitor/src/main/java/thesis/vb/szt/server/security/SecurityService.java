@@ -31,16 +31,6 @@ public class SecurityService
 		String encrypted = Base64.encodeBase64String(result);
 
 		return encrypted;
-
-		/*
-		 * Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding"); //
-		 * /CBC/PKCS5Padding cipher.init(Cipher.ENCRYPT_MODE, secret);
-		 * 
-		 * String ciphertext = Base64.encodeBase64String(cipher.doFinal(query
-		 * .getBytes("UTF-8")));
-		 * 
-		 * return ciphertext;
-		 */
 	}
 
 	public String decryptQuery(SecretKey secretKey, String encryptedQuery) throws Exception
@@ -49,13 +39,5 @@ public class SecurityService
 		cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
 		byte[] decodes = Base64.decodeBase64(encryptedQuery);
 		return new String(cipher.doFinal(decodes), "UTF-8");
-
-		/*
-		 * Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-		 * cipher.init(Cipher.DECRYPT_MODE, secret); String decryptedString =
-		 * new String(cipher.doFinal(Base64 .decodeBase64(encryptedPassword)));
-		 * 
-		 * return decryptedString;
-		 */
 	}
 }

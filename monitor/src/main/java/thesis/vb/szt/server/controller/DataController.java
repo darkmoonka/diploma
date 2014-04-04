@@ -1,10 +1,6 @@
 package thesis.vb.szt.server.controller;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.KeyFactory;
@@ -26,9 +22,11 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Controller;
@@ -51,7 +49,6 @@ import thesis.vb.szt.server.entity.Agent;
 import thesis.vb.szt.server.entity.Contact;
 import thesis.vb.szt.server.entity.Contacts;
 import thesis.vb.szt.server.security.Keys;
-import thesis.vb.szt.server.security.UserService;
 import thesis.vb.szt.server.util.CommunicationData;
 import thesis.vb.szt.server.util.Notifier;
 
@@ -73,9 +70,9 @@ public class DataController
 	@Autowired(required = true)
 	private Notifier notifier;
 
-//	@Autowired(required = true)
-//	private SecurityService securityService;
-	
+	// @Autowired(required = true)
+	// private SecurityService securityService;
+
 	protected static Logger logger = Logger.getLogger("DataController");
 
 	private final String subject = "New registration";
@@ -85,19 +82,22 @@ public class DataController
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public void test()
 	{
-//		try
-//		{
-//			SecretKey secretKey = Keys.generatySymmetricKeyFromPassword("almafa");
-//			String encryptedPassword = securityService.encrypPassword("almafa", secretKey);
-//			logger.info("encrypted: " + encryptedPassword);
-//			String plainPassword = securityService.decryptPassword(secretKey, encryptedPassword);
-//			logger.info("plainPassowrd: " + plainPassword);
-//			
-//			
-//		} catch (Exception e)
-//		{
-//			logger.error("", e);
-//		}
+		// try
+		// {
+		// SecretKey secretKey =
+		// Keys.generatySymmetricKeyFromPassword("almafa");
+		// String encryptedPassword = securityService.encrypPassword("almafa",
+		// secretKey);
+		// logger.info("encrypted: " + encryptedPassword);
+		// String plainPassword = securityService.decryptPassword(secretKey,
+		// encryptedPassword);
+		// logger.info("plainPassowrd: " + plainPassword);
+		//
+		//
+		// } catch (Exception e)
+		// {
+		// logger.error("", e);
+		// }
 	}
 
 	@RequestMapping(value = "/reports/{address}", method = RequestMethod.GET)
@@ -293,26 +293,10 @@ public class DataController
 	{
 		try
 		{
-			Logger logger = Logger.getLogger("Data Controller");
 			logger.info("Received request to register agent with address:" + macAddress);
 
-			// TODO ezt a fájlmarhaságot meg kell majd szüntetni
-			File file = new File("test.txt");
-			if (!file.exists())
-			{
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(contacts);
-			bw.close();
-			Contacts cc = (Contacts) unMarshaller.unmarshal(new StreamSource(
-					new FileInputStream(file)));
-			file.delete();
-
-			// TODO kitesztelni
-			// Contacts c = (Contacts) unMarshaller.unmarshal(new
-			// StreamSource(IOUtils.toInputStream(contacts)));
+			Contacts co = (Contacts) unMarshaller.unmarshal(new StreamSource(IOUtils
+					.toInputStream(contacts)));
 
 			Agent agent = dao.getAgentByAddress(macAddress);
 			byte[] agentPublicKey = publicKey.getBytes();
@@ -333,14 +317,18 @@ public class DataController
 
 				Set<Contact> agentContacts = new HashSet<Contact>();
 
-				for (thesis.vb.szt.server.entity.Contact item : cc.getContacts())
+				for (thesis.vb.szt.server.entity.Contact item : co.getContacts())
 				{
-					Contact contact = new Contact();
-					contact.setEmail(item.getEmail());
-					contact.setName(item.getName());
-					agentContacts.add(contact);
+					Contact contact = dao.getContactByUsername(item.getUsername());
+					if (contact != null)
+					{
+						agentContacts.add(contact);
 
-					notifier.sendInfoMail(item.getEmail(), item.getName(), subject, body);
+						notifier.sendInfoMail(contact.getEmail(), contact.getName(), subject, body);
+					}
+					else {
+						response.sendError(HttpStatus.NOT_FOUND.value(), "Contact with username: " + item.getUsername() + " not found");
+					}
 				}
 
 				agent.setContats(agentContacts);
@@ -359,10 +347,17 @@ public class DataController
 			javax.xml.transform.Result xmlResult = new StreamResult(responseStream);
 			marshaller.marshal(communicationData, xmlResult);
 			responseStream.close();
-
+			response.setStatus(HttpStatus.OK.value());
 		} catch (Exception e)
 		{
-			e.printStackTrace();
+			logger.error("Unable to register agent", e);
+			try
+			{
+				response.sendError(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage());
+			} catch (IOException e1)
+			{
+				logger.error("Unable to send error response", e);
+			}
 		}
 	}
 

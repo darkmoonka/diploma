@@ -1,6 +1,7 @@
 package diploma.vb.szt.agent;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
@@ -20,6 +21,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -91,18 +93,23 @@ public class Communication
 		reqEntity.addPart("publicKey", new ByteArrayBody(publicKey, ""));
 		postRequest.setEntity(reqEntity);
 		HttpResponse response = httpClient.execute(postRequest);
-
-		jaxbContext = JAXBContext
-				.newInstance(CommunicationData.class);
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		CommunicationData communicationData = (CommunicationData) jaxbUnmarshaller
-				.unmarshal(new InputStreamReader(response.getEntity()
-						.getContent(), "UTF-8"));
-
-		String agentId = Keys.decryptString(communicationData.getValue(),
-				Keys.loadPrivateKey(), communicationData.getEncryptedAesKey());
-
-		return Integer.valueOf(agentId);
+		if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+			jaxbContext = JAXBContext
+					.newInstance(CommunicationData.class);
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			CommunicationData communicationData = (CommunicationData) jaxbUnmarshaller
+					.unmarshal(new InputStreamReader(response.getEntity()
+							.getContent(), "UTF-8"));
+	
+			String agentId = Keys.decryptString(communicationData.getValue(),
+					Keys.loadPrivateKey(), communicationData.getEncryptedAesKey());
+	
+			return Integer.valueOf(agentId);
+		} else {
+			System.out.println("Unable to register agent. Server returned" + System.getProperty("line.separator")
+					+ response.getStatusLine().getReasonPhrase());
+			return -1;
+		}
 	}
 
 	static PublicKey getServerPublicKey(String url) throws Exception

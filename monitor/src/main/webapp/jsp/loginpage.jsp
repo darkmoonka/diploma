@@ -36,22 +36,7 @@
 	</form>
 	
 	<div id="register">
-		<h1>Register new user</h1>
-		<form>
-			<p>
-				<label>Username</label>
-				<input type="text" id="username" /> 
-			</p>
-			
-			<p>
-				<label>Password</label>
-				<input type="password" id="password" />  
-			</p>
-			
-			<p>
-				<input type="button" value="Register" onclick="register()"/> 
-			</p>
-		</form>
+		<a href="register">Register</a>
 	</div>
 	<script type="text/javascript"> 
 	

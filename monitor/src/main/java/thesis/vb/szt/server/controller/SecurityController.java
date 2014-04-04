@@ -47,11 +47,21 @@ public class SecurityController
 		return "deniedpage";
 
 	}
+	
+	@RequestMapping(value = "/register", method = RequestMethod.GET)
+	public String getRegisterContactPage()
+	{
+		
+		logger.debug("Received request to show denied page");
+		return "registerContact";
+
+	}
 
 	@RequestMapping(value = "/registerContact", method = RequestMethod.POST)
 	public String registerContact(@RequestParam("username") String username,
 			@RequestParam("password") String password,
-			@RequestParam("password2") String password2, @RequestParam("email") String email)
+			@RequestParam("password2") String password2, @RequestParam("email") String email,
+			@RequestParam("name") String name, @RequestParam("phone") String phone)
 	{
 		if (username == null || password == null || password2 == null
 				|| !password.equals(password2))
@@ -64,7 +74,7 @@ public class SecurityController
 		} else
 		{
 			password = passwordEncoder.encodePassword(password, null);
-			dao.updateContact(username, password, email);
+			dao.createContact(name, username, password, email, phone);
 			return "redirect:/";
 		}
 		return "registerContact";

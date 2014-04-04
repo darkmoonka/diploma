@@ -9,11 +9,13 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 
 import thesis.vb.szt.server.entity.Contact;
 
 public class Notifier
 {
+	@Autowired
 	public Mail mail;
 
 	public void error(Logger logger, String message, Throwable throwable)
@@ -22,7 +24,7 @@ public class Notifier
 
 		for (Contact contact : admins)
 		{
-			String subject = "monit error";
+			String subject = "monitor error";
 			StringBuilder sb = new StringBuilder("");
 			sb.append("error message: \n").append(message + "\n\n");
 			if (throwable != null)
@@ -77,7 +79,8 @@ public class Notifier
 	{
 		return mail;
 	}
-
+	
+	@Required
 	public void setMail(Mail mail)
 	{
 		this.mail = mail;
