@@ -1,10 +1,12 @@
-window.setInterval(refresh, 10000);
+window.setInterval(refresh, 100000); //TODO 10 secs
 
 var chartData = [];
 var isLoaded = false;
 var attributes = [];
 var address;
 var showAttributes = [];
+var table;
+var reportTable;
 
 function refresh()
 {
@@ -15,44 +17,47 @@ function refresh()
 		success : function(data)
 		{
 			table = jq.parseJSON(data);
-
-			var reportTable = jq(".reports");
-			reportTable.text("");
-
+//			console.log(table);
+			var reportTableHead = jq("#reportTableHead");
+			var reportTableBody = jq("#reportTableBody");
+			
+			reportTableHead.empty();
+			reportTableBody.empty();
+			
 			var k = 0;
-			reportTable.append("<table><thead><tr>");
+			reportTableHead.append("<tr id='reportTableHeadRow'>");
+			
+			var reportTableHeadRow = jq("#reportTableHeadRow");
 			for ( var key in table[0])
 			{
 				if (isLoaded && attributes[k] == key && showAttributes[k][key] == true)
-					reportTable.append("<th>" + key + "</th>");
+					reportTableHeadRow.append("<th>" + key + "</th>");
 				else if(!isLoaded)
-					reportTable.append("<th>" + key + "</th>");
+					reportTableHeadRow.append("<th>" + key + "</th>");
 				k++;
 			}
 
-			reportTable.append("</tr></thead><tbody>");
+			reportTableHead.append("</tr>");
 
 			for ( var j = 0; j < table.length - 1; j++)
 			{
-				reportTable.append("<tr>");
+				reportTableBody.append("<tr id='reportTableBodyRow" + table[j]['id'] + "'>");
+				var reportTableBodyRow = jq("#reportTableBodyRow" + table[j]['id']);
+				
 				var i = 0;
 				for ( var key in table[j])
 				{
 					if (isLoaded && attributes[i] == key && showAttributes[i][key] == true)
 					{
-						reportTable.append("<td>" + table[j][key] + "</td>");
+						reportTableBodyRow.append("<td>" + table[j][key] + "</td>");
 					}
 					else if(!isLoaded)
-						reportTable.append("<td>" + table[j][key] + "</td>");
+						reportTableBodyRow.append("<td>" + table[j][key] + "</td>");
 					
 					i++;
 				}
-				reportTable.append("</tr>");
-
+				reportTableBody.append("</tr>");
 			}
-
-			reportTable.append("</tbody></table>");
-			reportTable.append("</br>");
 
 			// chart
 			if (!isLoaded)
@@ -75,14 +80,24 @@ function refresh()
 				drawChart();
 				setShownAttributesDefault();
 			}
+			
+			//TODO elcsesződik a header, ha kiveszünk egy oszlopot.
+			//Valami olyasmi van mögötte, hogy nem kapunk mindig teljesen új datatable-t, hanem cacheli?
+			//Ilyenkor nem kerülnek rá a th tag-ekre a datatable class-jai
+//			if(reportTable != null) {
+//				reportTable.fnClearTable();
+//			}
+			reportTable = null;
+			reportTable = jq("#reportTable").dataTable();
+			reportTable.fnDraw();
+			//------------------------------------------
 		}
 	});
-
 }
 
 function setShownAttributesDefault()
 {
-	var form = jq("#checkboxes");
+	var form = jq("#checkboxdiv");
 	for ( var attr in attributes)
 	{
 		var temp =
@@ -93,12 +108,12 @@ function setShownAttributesDefault()
 		var checked = "";
 		if (temp[attributes[attr]])
 			checked = "checked";
-		form.append("<input type=\"checkbox\" " +
-							"class=\"checkbox-instance\" " +
-							"id=\"" + attributes[attr] + "\" "
+			form.append(
+				"<label class='checkbox-inline'>" +
+				"<input type='checkbox' id='" + attributes[attr] + "' "
 							+ checked + 
-							" onclick=\"onChange(" + attr + ")\">"
-					+ "<span class=\"checkbox-attribute\">  " + attributes[attr] + "</span>" + "<br />");
+							" onclick='onChange(" + attr + ")'>"
+					+ "" + attributes[attr] + "</label>");
 	}
 }
 
@@ -169,6 +184,10 @@ function drawChart()
 			}
 		}
 
+		
+		    
+		
+		
 		// CURSOR
 		var chartCursor = new AmCharts.ChartCursor();
 		chartCursor.cursorPosition = "mouse";

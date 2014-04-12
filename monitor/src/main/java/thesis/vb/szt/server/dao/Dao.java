@@ -259,7 +259,7 @@ public class Dao
 
 		// Set<String> tableNames = getTableNames();
 
-		String tableName = TABLE_PREFIX + mac.toLowerCase();
+		String tableName = TABLE_PREFIX + mac;
 		String query = "SELECT * FROM " + tableName;
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);

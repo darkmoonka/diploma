@@ -4,8 +4,9 @@
 
 <html>
 <head>
-<link rel="stylesheet" href="../css/bootstrap.min.css" type="text/css" />
-<link rel="stylesheet" href="../css/design.css" type="text/css" />
+<link rel="stylesheet" href="../css/bootstrap.css" type="text/css" />
+<!-- <link rel="stylesheet" href="../css/design.css" type="text/css" /> -->
+<link rel="stylesheet" href="../resources/dataTable/css/demo_table.css" type="text/css" />
 <link rel="stylesheet" href="../css/reports.css" type="text/css" />
 </head>
 <body>
@@ -13,15 +14,23 @@
 	<h1>Reports for ${name}</h1>
 	</header>
 	<div class="container">
-		<div class="content">
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 scrollDiv">
+				<div id="chartdiv"></div>
+			</div>
+		</div>
 
-			<div id="chartdiv"></div>
-<!-- 			<div id="reportsdiv"></div> -->
-			<div id="checkboxdiv">
-				<form id="checkboxes"></form>
+		<div class="row">
+			<div class="col-lg-12 col-md-12 col-sm-12 panel panel-default" id="checkboxdiv">
 			</div>
 
-			<div class="reports">
+			<div class="col-lg-12 col-md-12 col-sm-12 scrollDiv" id="reportTableDiv">
+				<!-- 				<div class="panel panel-default"> -->
+				<!-- 					<div class="panel-body"> -->
+				<table class="table" id="reportTable">
+					<thead id="reportTableHead"></thead>
+					<tbody id="reportTableBody"></tbody>
+				</table>
 			</div>
 		</div>
 	</div>
@@ -38,8 +47,8 @@
 </script>
 <script src="../resources/amcharts.js" type="text/javascript"></script>
 <script src="../resources/serial.js" type="text/javascript"></script>
+<script src="../resources/dataTable/js/jquery.dataTables.min.js" type="text/javascript"></script>
 <script src="../resources/report.js" type="text/javascript"></script>
-
 </html>
 
 

@@ -149,6 +149,7 @@ public class MobileController
 		logger.info("Recieved request to get agent from mobile client");
 
 		final String username = request.getParameter("username");
+		//Contains the mac address
 		final String encryptedQuery = request.getParameter("encryptedQuery");
 
 		StringWriter sw = null;
@@ -215,8 +216,6 @@ public class MobileController
 					writer = new PrintWriter(new OutputStreamWriter(responseStream));
 					writer.println(encryptedResponse);
 					writer.flush();
-					response.setStatus(HttpStatus.OK.value());
-
 					response.setStatus(HttpStatus.OK.value());
 				} catch (IOException e)
 				{

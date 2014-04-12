@@ -45,6 +45,4 @@ public class ReportListRequest
 	{
 		this.limit = to;
 	}
-	
-	
 }

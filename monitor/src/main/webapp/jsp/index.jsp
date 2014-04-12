@@ -14,14 +14,9 @@
 
 </head>
 <body>
-
-	
-	
 	<div id="content">
 		<h1>Registered agents</h1>
 		<div class="well">
-		
-				<%-- 		<c:forEach var="agent" items=${agents}> --%>
 			<ul>
 				<c:forEach var="agent" items="${agents}">
 					<li>
