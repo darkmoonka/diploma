@@ -1,5 +1,7 @@
 package thesis.vb.szt.server.entity;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,6 +15,8 @@ public class ReportListRequest
 	//from this report
 	private int from;
 	
+	private String fromDate;
+
 	//get this many reports 
 	private int limit;
 
@@ -26,6 +30,16 @@ public class ReportListRequest
 		this.mac = mac;
 	}
 
+	public String getFromDate()
+	{
+		return fromDate;
+	}
+
+	public void setFromDate(String fromDate)
+	{
+		this.fromDate = fromDate;
+	}
+	
 	public int getFrom()
 	{
 		return from;

@@ -142,7 +142,98 @@ public class MobileController
 			}
 		}
 	}
+	
+	@RequestMapping(value = "/getLatestReports", method = RequestMethod.GET)
+	private void getLatestReports(HttpServletRequest request, HttpServletResponse response)
+	{
+		logger.info("Recieved request to get latest reports from mobile client");
+		final String username = request.getParameter("username");
+		/**		Contains the mac address and timestamp	  */
+		final String encryptedQuery = request.getParameter("encryptedQuery");
+		
+		StringWriter sw = null;
+		PrintWriter writer = null;
+		OutputStream responseStream = null;
+		
+		try {
+			if(username == null || encryptedQuery == null ||
+					"".equals(username) || "".equals(encryptedQuery)) {
+				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or query parameter was not provided");
+				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
+				return;
+			}
+			sw = new StringWriter();
+			Contact contact = null;
 
+			/** Get contact	*/
+			try
+			{
+				contact = fetchContact(username, response);
+				if (contact == null) {
+					response.sendError(HttpStatus.BAD_REQUEST.value(), "Unable to find user " + username + " or password is incorrect");
+					return;
+				}
+			} catch (IOException e)
+			{
+				logger.error("Unable to fetch contact " + username, e);
+				return;
+			}
+			SecretKey key = Keys.generateSymmetricKeyForMobiles(contact.getPassword());
+			
+			// Decrypted sting is the mac address
+			String decryptedQuery = securityService.decryptQuery(key, encryptedQuery);
+			
+			
+			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller
+					.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
+			
+			ReportList reportList = null;
+			// get reportlist
+			try
+			{
+				reportList = new ReportList(dao.getReportsForAgentByTimestamp(
+						reportListRequest.getMac(), reportListRequest.getFromDate(),
+						reportListRequest.getLimit(), false));
+				
+				//TODO
+//				reportList.setCount(dao.getReportCount(reportListRequest.getMac()));
+				
+				logger.info("ReportList created:\n" + reportList.toString());
+			} catch (Exception e)
+			{
+				logger.error("Unable to get reports", e);
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+				return;
+			}
+
+			// encrypt reportlist
+			try
+			{
+				responseStream = response.getOutputStream();
+
+				marshaller.marshal(reportList, new StreamResult(sw));
+				String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
+
+				logger.info("Encrypted response is: " + encryptedResponse);
+
+				writer = new PrintWriter(new OutputStreamWriter(responseStream));
+				writer.println(encryptedResponse);
+				writer.flush();
+				response.setStatus(HttpStatus.OK.value());
+			} catch (IOException e)
+			{
+				logger.error("Unable to marshal reports", e);
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+			
+			
+		} catch (Exception e) {
+			logger.error("Unable to get latest reports for " + username, e);
+		}
+		
+		
+	}
+	
 	@RequestMapping(value = "/getAgent", method = RequestMethod.GET)
 	public void getAgent(HttpServletRequest request, HttpServletResponse response)
 	{
@@ -160,7 +251,7 @@ public class MobileController
 		{
 			if(username == null || encryptedQuery == null ||
 					"".equals(username) || "".equals(encryptedQuery)) {
-				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or password parameter was not provided");
+				response.sendError(HttpStatus.BAD_REQUEST.value(), "Username, or query parameter was not provided");
 				logger.error("Invalid parameters: " + username + " " + encryptedQuery);
 				return;
 			}
@@ -186,43 +277,46 @@ public class MobileController
 			ReportListRequest reportListRequest = (ReportListRequest) unmarshaller
 					.unmarshal(new StreamSource(new StringReader(decryptedQuery)));
 
+			ReportList reportList = null;
+			// get reportlist
+			try
 			{
-				ReportList reportList = null;
-				// get reportlist
-				try
-				{
-					reportList = new ReportList(dao.getReportsForAgent(
-							reportListRequest.getMac(), reportListRequest.getFrom(),
-							reportListRequest.getLimit()));
-					reportList.setCount(dao.getReportCount(reportListRequest.getMac()));
-					logger.info("ReportList created:\n" + reportList.toString());
-				} catch (Exception e)
-				{
-					logger.error("Unable to get reports", e);
-					response.setStatus(HttpStatus.BAD_REQUEST.value());
-					return;
-				}
-
-				// encrypt reportlist
-				try
-				{
-					responseStream = response.getOutputStream();
-
-					marshaller.marshal(reportList, new StreamResult(sw));
-					String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
-
-					logger.info("Encrypted response is: " + encryptedResponse);
-
-					writer = new PrintWriter(new OutputStreamWriter(responseStream));
-					writer.println(encryptedResponse);
-					writer.flush();
-					response.setStatus(HttpStatus.OK.value());
-				} catch (IOException e)
-				{
-					logger.error("Unable to marshal reports", e);
-					response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-				}
+//					reportList = new ReportList(dao.getReportsForAgent(
+//							reportListRequest.getMac(), reportListRequest.getFrom(),
+//							reportListRequest.getLimit()));
+				reportList = new ReportList(dao.getReportsForAgentByTimestamp(
+						reportListRequest.getMac(), reportListRequest.getFromDate(),
+						reportListRequest.getLimit(), true));
+				
+				reportList.setCount(dao.getReportCount(reportListRequest.getMac()));
+				logger.info("ReportList created:\n" + reportList.toString());
+			} catch (Exception e)
+			{
+				logger.error("Unable to get reports", e);
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+				return;
 			}
+
+			// encrypt reportlist
+			try
+			{
+				responseStream = response.getOutputStream();
+
+				marshaller.marshal(reportList, new StreamResult(sw));
+				String encryptedResponse = securityService.encrypQuery(sw.toString(), key);
+
+				logger.info("Encrypted response is: " + encryptedResponse);
+
+				writer = new PrintWriter(new OutputStreamWriter(responseStream));
+				writer.println(encryptedResponse);
+				writer.flush();
+				response.setStatus(HttpStatus.OK.value());
+			} catch (IOException e)
+			{
+				logger.error("Unable to marshal reports", e);
+				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+			
 		} catch (Exception e)
 		{
 			logger.error("Unable to get reports for " + username, e);

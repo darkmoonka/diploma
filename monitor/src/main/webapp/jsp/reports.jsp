@@ -10,29 +10,41 @@
 <link rel="stylesheet" href="../css/reports.css" type="text/css" />
 </head>
 <body>
-	<header>
-	<h1>Reports for ${name}</h1>
-	</header>
+	<!-- 	<header> -->
+	<%-- 	<h1>Reports for ${name}</h1> --%>
+	<!-- 	</header> -->
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-12 col-md-12 col-sm-12 scrollDiv">
-				<div id="chartdiv"></div>
+			<div class="col-lg-12 col-md-12 col-sm-12 panel panel-default">
+				<div class="panel-heading">Reports for ${name}</div>
+				<div class="panel-body">
+					<div class="scrollDiv">
+						<div id="chartdiv"></div>
+					</div>
+					<div id="checkboxdiv"></div>
+					<div id="reportTableDiv" class="scrollDiv">
+						<table class="table" id="reportTable">
+							<thead id="reportTableHead"></thead>
+							<tbody id="reportTableBody"></tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div class="row">
-			<div class="col-lg-12 col-md-12 col-sm-12 panel panel-default" id="checkboxdiv">
-			</div>
+		<!-- 		<div class="row"> -->
+		<!-- 			<div class="col-lg-12 col-md-12 col-sm-12 panel panel-default" id="checkboxdiv"> -->
+		<!-- 			</div> -->
 
-			<div class="col-lg-12 col-md-12 col-sm-12 scrollDiv" id="reportTableDiv">
-				<!-- 				<div class="panel panel-default"> -->
-				<!-- 					<div class="panel-body"> -->
-				<table class="table" id="reportTable">
-					<thead id="reportTableHead"></thead>
-					<tbody id="reportTableBody"></tbody>
-				</table>
-			</div>
-		</div>
+		<!-- 			<div class="col-lg-12 col-md-12 col-sm-12 scrollDiv" id="reportTableDiv"> -->
+		<!-- 								<div class="panel panel-default"> -->
+		<!-- 									<div class="panel-body"> -->
+		<!-- 				<table class="table" id="reportTable"> -->
+		<!-- 					<thead id="reportTableHead"></thead> -->
+		<!-- 					<tbody id="reportTableBody"></tbody> -->
+		<!-- 				</table> -->
+		<!-- 			</div> -->
+		<!-- 		</div> -->
 	</div>
 
 </body>

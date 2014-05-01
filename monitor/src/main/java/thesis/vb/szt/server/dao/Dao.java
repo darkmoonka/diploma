@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,9 +19,11 @@ import java.util.Set;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,21 +104,22 @@ public class Dao
 		return result;
 	}
 
-//	public Contact getContactByEmail(String email)
-//	{
-//		try
-//		{
-//			final String queryString = "SELECT c FROM Contact c " + "WHERE c.email = :email";
-//			Contact contact = (Contact) sessionFactory.getCurrentSession()
-//					.createQuery(queryString).setString("email", email).uniqueResult();
-//			return contact;
-//		} catch (Exception e)
-//		{
-//			logger.error("Unable to get contact by email: " + email);
-//			return null;
-//		}
-//	}
-	
+	// public Contact getContactByEmail(String email)
+	// {
+	// try
+	// {
+	// final String queryString = "SELECT c FROM Contact c " +
+	// "WHERE c.email = :email";
+	// Contact contact = (Contact) sessionFactory.getCurrentSession()
+	// .createQuery(queryString).setString("email", email).uniqueResult();
+	// return contact;
+	// } catch (Exception e)
+	// {
+	// logger.error("Unable to get contact by email: " + email);
+	// return null;
+	// }
+	// }
+
 	public Contact getContactById(int id)
 	{
 		try
@@ -201,55 +205,91 @@ public class Dao
 		}
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public List<List<Map<String, String>>> getAllReports(int count)
-//	{
-//		List<List<Map<String, String>>> result = new ArrayList<List<Map<String, String>>>();
-//
-//		Set<String> tableNames = getTableNames();
-//
-//		for (String tableName : tableNames)
-//		{
-//			List<Map<String, String>> tableData = new ArrayList<Map<String, String>>();
-//
-//			String queryString = "SELECT * FROM " + tableName;
-//			Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
-//
-//			if (count > 0)
-//			{
-//				logger.info("Listing last " + count + " reports from " + tableName);
-//				q.setMaxResults(count);
-//			} else
-//			{
-//				logger.info("Listing reports from " + tableName);
-//			}
-//
-//			List<String> reportKeys = getReportAttributes(tableName);
-//			List<Object[]> table = (List<Object[]>) q.list();
-//
-//			for (int row = 0; row < table.size(); row++)
-//			{
-//				Map<String, String> reportInstance = new HashMap<String, String>();
-//				Object tableValues[] = table.get(row);
-//				int tableValuesLength = tableValues.length;
-//				for (int column = 0; column < tableValuesLength; column++)
-//				{
-//					String key = reportKeys.get(column);
-//					String value = tableValues[column].toString();
-//					reportInstance.put(key, value);
-//				}
-//				tableData.add(reportInstance);
-//			}
-//			result.add(tableData);
-//		}
-//		return result;
-//	}
+	// @SuppressWarnings("unchecked")
+	// public List<List<Map<String, String>>> getAllReports(int count)
+	// {
+	// List<List<Map<String, String>>> result = new ArrayList<List<Map<String,
+	// String>>>();
+	//
+	// Set<String> tableNames = getTableNames();
+	//
+	// for (String tableName : tableNames)
+	// {
+	// List<Map<String, String>> tableData = new ArrayList<Map<String,
+	// String>>();
+	//
+	// String queryString = "SELECT * FROM " + tableName;
+	// Query q = sessionFactory.getCurrentSession().createSQLQuery(queryString);
+	//
+	// if (count > 0)
+	// {
+	// logger.info("Listing last " + count + " reports from " + tableName);
+	// q.setMaxResults(count);
+	// } else
+	// {
+	// logger.info("Listing reports from " + tableName);
+	// }
+	//
+	// List<String> reportKeys = getReportAttributes(tableName);
+	// List<Object[]> table = (List<Object[]>) q.list();
+	//
+	// for (int row = 0; row < table.size(); row++)
+	// {
+	// Map<String, String> reportInstance = new HashMap<String, String>();
+	// Object tableValues[] = table.get(row);
+	// int tableValuesLength = tableValues.length;
+	// for (int column = 0; column < tableValuesLength; column++)
+	// {
+	// String key = reportKeys.get(column);
+	// String value = tableValues[column].toString();
+	// reportInstance.put(key, value);
+	// }
+	// tableData.add(reportInstance);
+	// }
+	// result.add(tableData);
+	// }
+	// return result;
+	// }
 
+	
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, String>> getReportsForAgent2(String mac, int from, int limit)
+	{
+		String tableName = TABLE_PREFIX + mac;
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
+		List<String> reportKeys = getReportAttributes(tableName);
+		
+		Criteria c = sessionFactory.getCurrentSession().createCriteria(String.class);
+//		c.createAlias(tableName + ".timestamp", "timestamp");
+//		c.addOrder(Order.asc(tableName + ".timestamp"));
+		
+		List<Object[]> table = (List<Object[]>)  c.list();
+
+		for (int row = 0; row < table.size(); row++)
+		{
+			Map<String, String> reportInstance = new HashMap<String, String>();
+			Object tableValues[] = table.get(row);
+			int tableValuesLength = tableValues.length;
+			for (int column = 0; column < tableValuesLength; column++)
+			{
+				String key = reportKeys.get(column);
+				String value = tableValues[column].toString();
+				reportInstance.put(key, value);
+			}
+			result.add(reportInstance);
+		}
+
+		return result;
+	}
+	
 	/**
 	 * 
 	 * @param mac
-	 * @param from set to -1 to get all reports
-	 * @param limit set to -1 to get all reports
+	 * @param from
+	 *            set to -1 to get all reports
+	 * @param limit
+	 *            set to -1 to get all reports
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -260,13 +300,15 @@ public class Dao
 		// Set<String> tableNames = getTableNames();
 
 		String tableName = TABLE_PREFIX + mac;
-		String query = "SELECT * FROM " + tableName;
+		String query = "SELECT * FROM " + tableName + " ORDER BY timestamp DESC";
 
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
-		if(!(from == -1 && limit == -1)) {
+
+		if (!(from == -1 && limit == -1))
+		{
 			q.setFirstResult(from).setMaxResults(limit);
 		}
-		
+
 		List<String> reportKeys = getReportAttributes(tableName);
 		List<Object[]> table = (List<Object[]>) q.list();
 
@@ -286,16 +328,80 @@ public class Dao
 
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Map<String, String>> getReportsForAgentByTimestamp(String mac, String timestamp, int limit, boolean isDescending)
+	{
+		List<Map<String, String>> result = new ArrayList<Map<String, String>>();
 
-	public int getReportCount(String mac) {
+		// Set<String> tableNames = getTableNames();
+
+		String tableName = TABLE_PREFIX + mac;
+		String query = "SELECT * FROM " + tableName;
+
+		//2014-04-05 12:51:02
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
+		Date timestampDate = null;
+		try
+		{
+			if(timestamp != null) {
+				timestampDate = df.parse(timestamp);
+			}
+		} catch (ParseException e)
+		{
+			logger.error("Unable to parse timestamp", e);
+		}
+		
+		if (timestampDate != null)
+		{
+			if(isDescending) {
+				query += " WHERE timestamp < " + "'" + timestamp + "'";		//TODO injection
+			} else {
+				query += " WHERE timestamp > " + "'" + timestamp + "'";
+			}
+//			q.setFirstResult(from).setMaxResults(limit);
+		}
+		
+		if(isDescending) {
+			query += " ORDER BY timestamp DESC";
+		}
+		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
+		
+		List<String> reportKeys = getReportAttributes(tableName);
+		
+		if(limit > 0) {
+			q.setMaxResults(limit);
+		}
+		List<Object[]> table = (List<Object[]>) q.list();
+
+		for (int row = 0; row < table.size(); row++)
+		{
+			Map<String, String> reportInstance = new HashMap<String, String>();
+			Object tableValues[] = table.get(row);
+			int tableValuesLength = tableValues.length;
+			for (int column = 0; column < tableValuesLength; column++)
+			{
+				String key = reportKeys.get(column);
+				String value = tableValues[column].toString();
+				reportInstance.put(key, value);
+			}
+			result.add(reportInstance);
+		}
+
+		return result;
+	}
+
+	public int getReportCount(String mac)
+	{
 		String tableName = TABLE_PREFIX + mac;
 		String query = "SELECT COUNT(*) FROM " + tableName;
 		Query q = sessionFactory.getCurrentSession().createSQLQuery(query);
 		BigInteger tmp = (BigInteger) q.uniqueResult();
-		
+
 		return tmp.intValue();
 	}
-	
+
 	public boolean insertReport(Map<String, String> report, String mac)
 	{
 		StringBuilder keyString = new StringBuilder(" (timestamp" + SQL_SEPARATOR + " ");
@@ -451,7 +557,8 @@ public class Dao
 	// return null;
 	// }
 
-	public boolean createContact(String name, String username, String password, String email, String phone)
+	public boolean createContact(String name, String username, String password, String email,
+			String phone)
 	{
 		try
 		{
@@ -461,10 +568,10 @@ public class Dao
 			contact.setPassword(password);
 			contact.setPhoneNumber(phone);
 			contact.setEmail(email);
-			
+
 			sessionFactory.getCurrentSession().persist(contact);
 
-//			sessionFactory.getCurrentSession().flush();
+			// sessionFactory.getCurrentSession().flush();
 			logger.info("Successfully created contact: " + username);
 			return true;
 		} catch (Exception e)
@@ -482,7 +589,8 @@ public class Dao
 					+ " WHERE c.username = :username";
 			Contact contact = (Contact) sessionFactory.getCurrentSession()
 					.createQuery(queryString).setString("username", username).uniqueResult();
-			if(contact != null) {
+			if (contact != null)
+			{
 				contact.fillAgentSet();
 			}
 			return contact;

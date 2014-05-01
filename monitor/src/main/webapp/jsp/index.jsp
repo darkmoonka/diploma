@@ -1,6 +1,5 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
@@ -14,23 +13,27 @@
 
 </head>
 <body>
-	<div id="content">
-		<h1>Registered agents</h1>
-		<div class="well">
-			<ul>
-				<c:forEach var="agent" items="${agents}">
-					<li>
-						<a href="reports/${agent.address}" class="listItem">
-		<%--					<div class="listItem" onclick="getReport('${agent.address}')"> --%>
-							<c:out value="${agent.name}"></c:out>
-							<c:out value="${agent.address}"></c:out>
-						</a>
-					</li>
-				</c:forEach>
-				<li><a href ="#" class="listItem">Gomboc 00_00_20_16_27_AA</a></li>
-				<li><a href ="#" class="listItem">Artur 64_70_12_20_9A_14</a></li>
-				<li><a href ="#" class="listItem">Work E0_18_17_14_EE_82</a></li>
-			</ul>
+	<div class="container">
+		<div class="row top-buffer text-center">
+			<div class="col-lg-10  col-lg-offset-1 col-md-12 col-sm-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h1>Registered agents</h1>
+					</div>
+					<div class="panel-body">
+						<ul>
+							<c:forEach var="agent" items="${agents}">
+								<li><a href="reports/${agent.address}" class="listItem"> 
+										<c:out value="${agent.name}"></c:out> <c:out value="${agent.address}"></c:out>
+								</a></li>
+							</c:forEach>
+							<li><a href="#" class="listItem">Gomboc 00_00_20_16_27_AA</a></li>
+							<li><a href="#" class="listItem">Artur 64_70_12_20_9A_14</a></li>
+							<li><a href="#" class="listItem">Work E0_18_17_14_EE_82</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
